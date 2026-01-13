@@ -1,36 +1,298 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kabakeh Feedback System – README
 
-## Getting Started
+This document explains **what was built**, **how everything is connected**, and **where to change things in the future**.
 
-First, run the development server:
+It is written so that even if you don’t touch this project for a long time, you can come back and understand it quickly.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🌍 Live URLs
+
+### Public feedback page (QR destination)
+
+```
+https://feedback.kabakeh.com
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+* Customers scan the QR code and land here
+* They leave a star rating and (optionally) feedback
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Admin dashboard (private)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+https://feedback.kabakeh.com/admin
+```
 
-## Learn More
+* Password protected
+* Shows all feedback stored in the database
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧩 High-level architecture
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+Customer phone
+   ↓ (QR code)
+Next.js app (Vercel)
+   ↓
+Supabase database
+   ↓
+Admin page (same app)
+```
 
-## Deploy on Vercel
+### Main services used
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* **Next.js** – frontend + backend (API routes)
+* **Vercel** – hosting & deployments
+* **Supabase** – PostgreSQL database
+* **GoDaddy** – domain & DNS (CNAME)
+* **Google Business Profile** – public reviews
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## ⭐ Product logic (VERY IMPORTANT)
+
+### Rating flow
+
+#### 4–5 stars
+
+* Rating is saved to Supabase
+* User is **immediately redirected to Google Reviews**
+* No submit button
+* Redirect is triggered by clicking the star (allowed by browsers)
+
+#### 1–3 stars
+
+* User sees an apology message
+* User can leave detailed private feedback
+* **NO redirect to Google**
+* Feedback stays private
+
+This approach:
+
+* Is ethical
+* Is Google-policy safe
+* Helps catch bad experiences early
+
+---
+
+## 🗄️ Supabase (Database)
+
+### Project
+
+* Platform: **Supabase**
+* Contains a single table for feedback
+
+### Table: `feedback`
+
+Columns:
+
+* `id` – unique ID
+* `rating` – integer (1–5)
+* `comment` – optional text
+* `contact_phone` – optional
+* `contact_email` – optional
+* `created_at` – timestamp
+
+### Security rules (RLS)
+
+* Public users: **can INSERT only**
+* No public SELECT access
+* Admin reads data using server-side key
+
+### Where to manage
+
+* Supabase Dashboard → Table Editor → `feedback`
+
+---
+
+## 🚀 Vercel (Hosting & Deployments)
+
+### Vercel project
+
+* Connected to GitHub repo:
+
+```
+OlgaKobti/kabakeh-feedback
+```
+
+* Production branch: `main`
+
+### Domain
+
+* Custom domain attached:
+
+```
+feedback.kabakeh.com
+```
+
+### How domain works
+
+* DNS CNAME set in GoDaddy:
+
+  * Host: `feedback`
+  * Value: `cname.vercel-dns.com`
+* Domain attached inside **Vercel → Settings → Domains**
+
+---
+
+## 🔐 Environment Variables (Vercel)
+
+Configured in:
+**Vercel → Project → Settings → Environment Variables**
+
+### Required variables
+
+```
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+
+NEXT_PUBLIC_GOOGLE_REVIEW_URL
+
+ADMIN_PASSWORD
+ADMIN_SECRET
+```
+
+### What each one does
+
+* `NEXT_PUBLIC_SUPABASE_URL` – Supabase project URL
+* `NEXT_PUBLIC_SUPABASE_ANON_KEY` – public key (safe for browser)
+* `SUPABASE_SERVICE_ROLE_KEY` – admin DB access (server only)
+* `NEXT_PUBLIC_GOOGLE_REVIEW_URL` – Google “Write a review” link
+* `ADMIN_PASSWORD` – password for `/admin`
+* `ADMIN_SECRET` – cookie signing secret
+
+⚠️ After changing env vars → **Redeploy** is required
+
+---
+
+## 🧑‍💼 Admin page
+
+### URL
+
+```
+/ admin
+```
+
+(full URL: [https://feedback.kabakeh.com/admin](https://feedback.kabakeh.com/admin))
+
+### How it works
+
+* Password is sent to `/api/admin/login`
+* Secure cookie is set
+* Admin data fetched from `/api/admin/feedback`
+
+### Files involved
+
+* `app/admin/page.tsx`
+* `app/api/admin/login/route.ts`
+* `app/api/admin/feedback/route.ts`
+* `lib/adminAuth.ts`
+
+---
+
+## 📁 Code structure (important files)
+
+```
+app/
+ ├── page.tsx                 # Public feedback page
+ ├── thanks/page.tsx          # Thank-you page
+ ├── admin/page.tsx           # Admin UI
+ ├── api/
+ │   ├── feedback/route.ts    # Save feedback
+ │   └── admin/
+ │       ├── login/route.ts   # Admin login
+ │       └── feedback/route.ts# Admin read feedback
+
+lib/
+ ├── supabase.ts              # Supabase clients
+ └── adminAuth.ts             # Admin cookie auth
+
+public/
+ └── (future logo, images)
+
+app/globals.css               # Styling
+```
+
+---
+
+## 🖨️ QR Code
+
+### QR target URL
+
+```
+https://feedback.kabakeh.com
+```
+
+### Suggested text under QR
+
+> “Your feedback helps us improve ❤️”
+
+Where to place:
+
+* Menus
+* Table tents
+* Counter
+* Receipts
+
+---
+
+## 🔄 How to update things in the future
+
+### Change Google review link
+
+1. Vercel → Settings → Environment Variables
+2. Update `NEXT_PUBLIC_GOOGLE_REVIEW_URL`
+3. Redeploy
+
+### Change admin password
+
+1. Update `ADMIN_PASSWORD` in Vercel
+2. Redeploy
+
+### Change UI text / behavior
+
+* Edit `app/page.tsx`
+* Commit & push
+* Vercel auto-deploys
+
+### View feedback
+
+* Supabase Dashboard
+* Or `/admin` page
+
+---
+
+## 🧠 Design principles used
+
+* No review gating (policy-safe)
+* Honest feedback collection
+* Private resolution of bad experiences
+* Encourage happy customers naturally
+
+---
+
+## ✅ Current status
+
+* ✅ Live in production
+* ✅ Custom domain
+* ✅ Secure database
+* ✅ Admin dashboard
+* ✅ Google redirect logic
+
+---
+
+## 🚧 Planned next upgrades
+
+* 📩 Email alert for 1–2★
+* 💬 WhatsApp alert for 1–2★
+* 🌍 Language switch (EN / עברית / العربية)
+* 🎨 Branding (logo + colors)
+* 📊 Weekly summary email
+
+---
+
+**Owner:** Kabakeh
+
+This system was built to be simple, safe, and easy to maintain.
