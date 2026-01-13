@@ -5,7 +5,11 @@ This document explains **what was built**, **how everything is connected**, and 
 It is written so that even if you don’t touch this project for a long time, you can come back and understand it quickly.
 
 Vercel - https://vercel.com/olgakobtis-projects/kabakeh-feedback - connect via GitHub creds
+
+
 GoDaddy - https://dcc.godaddy.com/control/portfolio/kabakeh.com/settings?ventureId=8df6d8d6-a010-494b-b0eb-8d3920b3611a&referrer=vh-quicklink&itc=mya_vh_buildwebsite_dashboard - connect with Eyad's creds
+
+
 Supabase:
 1. URL https://supabase.com/dashboard/project/yrmpgbqmkytwiczsennh/editor/17483?schema=public
 2. Pass: ask Olga for admin passwords
