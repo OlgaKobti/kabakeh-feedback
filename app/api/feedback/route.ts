@@ -21,6 +21,9 @@ export async function POST(req: Request) {
       comment: comment || null,
       contact_phone: contact_phone || null,
       contact_email: contact_email || null,
+      food_rating: body.food_rating ?? null,
+      service_rating: body.service_rating ?? null,
+      atmosphere_rating: body.atmosphere_rating ?? null,
     },
   ]);
 
