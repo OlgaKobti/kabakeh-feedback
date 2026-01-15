@@ -6,10 +6,12 @@ function StarRow({
   value,
   onPick,
   disabled,
+  color,
 }: {
   value: number | null;
   onPick: (v: number) => void;
   disabled?: boolean;
+  color: "green" | "red";
 }) {
   return (
     <div className="starsRow" role="radiogroup" aria-label="Rating">
@@ -19,7 +21,7 @@ function StarRow({
           <button
             key={v}
             type="button"
-            className={`starBtn ${active ? "active" : ""}`}
+            className={`starBtn ${color} ${active ? "active" : ""}`}
             onClick={() => onPick(v)}
             disabled={disabled}
             aria-label={`${v} stars`}
@@ -37,11 +39,13 @@ function CategoryBlock({
   value,
   onPick,
   disabled,
+  color,
 }: {
   title: string;
   value: number | null;
   onPick: (v: number) => void;
   disabled?: boolean;
+  color: "green" | "red";
 }) {
   return (
     <div style={{ marginTop: 14 }}>
@@ -51,7 +55,7 @@ function CategoryBlock({
         </label>
         <span style={{ fontSize: 13, color: "#6b7280" }}>{value ? `${value}/5` : ""}</span>
       </div>
-      <StarRow value={value} onPick={onPick} disabled={disabled} />
+      <StarRow value={value} onPick={onPick} disabled={disabled} color={color} />
     </div>
   );
 }
@@ -78,6 +82,9 @@ export default function HomePage() {
   // - "low":  overall <= 3 (apology + submit button, no Google redirect)
   // - "pick": nothing selected yet
   const mode = overall === null ? "pick" : overall >= 4 ? "high" : "low";
+
+  // Star color mode: low = red, high = green
+  const starColor: "green" | "red" = overall !== null && overall <= 3 ? "red" : "green";
 
   const apologyText = useMemo(
     () =>
@@ -180,17 +187,46 @@ export default function HomePage() {
   return (
     <main className="card">
       <div className="headerRow">
-        <div>
-          <h1 className="h1">Kabakeh</h1>
-          <p className="p">How was your experience today?</p>
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <div
+            style={{
+              width: 72,
+              height: 72,
+              borderRadius: "50%",
+              background: "#fff",
+              border: "1px solid #e5e7eb",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
+            <img
+              src="/logo.jpg"
+              alt="Kabakeh logo"
+              style={{
+                height: 52,
+                width: "auto",
+                transform: "translateX(2px) translateY(1px) scale(1.05)",
+              }}
+            />
+          </div>
+
+          <div>
+            <h1 className="h1" style={{ marginBottom: 2 }}>
+              Kabakeh
+            </h1>
+            <p className="p">How was your experience today?</p>
+          </div>
         </div>
+
         <span className="badge">Feedback</span>
       </div>
 
       {/* OVERALL */}
       <div style={{ marginTop: 14 }}>
         <label className="label">Overall rating</label>
-        <StarRow value={overall} onPick={setOverall} disabled={loading} />
+        <StarRow value={overall} onPick={setOverall} disabled={loading} color={starColor} />
 
         {mode === "high" && (
           <p className="small">
@@ -234,18 +270,26 @@ export default function HomePage() {
           border: "1px solid #e5e7eb",
         }}
       >
-        <CategoryBlock title="Food" value={food} onPick={setFood} disabled={categoriesDisabled} />
+        <CategoryBlock
+          title="Food"
+          value={food}
+          onPick={setFood}
+          disabled={categoriesDisabled}
+          color={starColor}
+        />
         <CategoryBlock
           title="Service"
           value={service}
           onPick={setService}
           disabled={categoriesDisabled}
+          color={starColor}
         />
         <CategoryBlock
           title="Atmosphere"
           value={atmosphere}
           onPick={setAtmosphere}
           disabled={categoriesDisabled}
+          color={starColor}
         />
 
         {overall === null && (
@@ -298,7 +342,8 @@ export default function HomePage() {
       {/* HIGH RATING HELPER */}
       {mode === "high" && (
         <p className="small">
-          After you select the category stars, you’ll be redirected automatically to leave a Google review.
+          After you select the category stars, you’ll be redirected automatically to leave a Google
+          review.
         </p>
       )}
 
