@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-function StarPicker({
+function StarRow({
   value,
   onPick,
   disabled,
@@ -32,18 +32,52 @@ function StarPicker({
   );
 }
 
+function CategoryBlock({
+  title,
+  value,
+  onPick,
+  disabled,
+}: {
+  title: string;
+  value: number | null;
+  onPick: (v: number) => void;
+  disabled?: boolean;
+}) {
+  return (
+    <div style={{ marginTop: 14 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <label className="label" style={{ margin: 0 }}>
+          {title}
+        </label>
+        <span style={{ fontSize: 13, color: "#6b7280" }}>{value ? `${value}/5` : ""}</span>
+      </div>
+      <StarRow value={value} onPick={onPick} disabled={disabled} />
+    </div>
+  );
+}
+
 export default function HomePage() {
   const googleUrl = process.env.NEXT_PUBLIC_GOOGLE_REVIEW_URL || "";
-  const [rating, setRating] = useState<number | null>(null);
 
-  // Low-rating extra details
+  // Overall + category ratings
+  const [overall, setOverall] = useState<number | null>(null);
+  const [food, setFood] = useState<number | null>(null);
+  const [service, setService] = useState<number | null>(null);
+  const [atmosphere, setAtmosphere] = useState<number | null>(null);
+
+  // Feedback (for low ratings encouraged, for high ratings optional)
   const [comment, setComment] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [contactEmail, setContactEmail] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
-  const [mode, setMode] = useState<"pick" | "low_details" | "done_low">("pick");
+
+  // Modes:
+  // - "high": overall >= 4 (auto-submit+redirect once categories are chosen)
+  // - "low":  overall <= 3 (apology + submit button, no Google redirect)
+  // - "pick": nothing selected yet
+  const mode = overall === null ? "pick" : overall >= 4 ? "high" : "low";
 
   const apologyText = useMemo(
     () =>
@@ -51,63 +85,97 @@ export default function HomePage() {
     []
   );
 
+  // Prevent double-submits when redirecting
+  const didAutoSubmitRef = useRef(false);
+
   async function saveFeedback(payload: any) {
     const res = await fetch("/api/feedback", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data?.error || "Failed to submit");
   }
 
-  async function onPickRating(v: number) {
-    if (loading) return;
-    setErr(null);
-    setRating(v);
+  // High-rating: auto submit + redirect ONLY when all ratings are selected
+  useEffect(() => {
+    async function run() {
+      if (mode !== "high") return;
+      if (loading) return;
 
-    // If 4-5: save immediately and redirect to Google
-    if (v >= 4) {
+      const ready = overall && food && service && atmosphere;
+      if (!ready) return;
+
       if (!googleUrl) {
         setErr("Google review link is not configured yet.");
         return;
       }
 
+      if (didAutoSubmitRef.current) return;
+      didAutoSubmitRef.current = true;
+
+      setErr(null);
       setLoading(true);
       try {
-        await saveFeedback({ rating: v });
-        // direct redirect (user click triggered)
+        await saveFeedback({
+          rating: overall,
+          food_rating: food,
+          service_rating: service,
+          atmosphere_rating: atmosphere,
+          comment: comment || null, // optional even for high ratings
+        });
+
+        // Redirect to Google after saving
         window.location.href = googleUrl;
       } catch (e: any) {
+        didAutoSubmitRef.current = false; // allow retry
         setErr(e.message ?? "Something went wrong");
       } finally {
         setLoading(false);
       }
-      return;
     }
 
-    // If 1-3: show apology + details form (no Google)
-    setMode("low_details");
-  }
+    run();
+  }, [mode, overall, food, service, atmosphere, googleUrl, loading, comment]);
 
-  async function submitLowDetails() {
-    if (loading || rating === null) return;
+  // Reset auto-submit lock if user changes overall rating
+  useEffect(() => {
+    didAutoSubmitRef.current = false;
+    setErr(null);
+  }, [overall]);
+
+  async function submitLow() {
+    if (loading) return;
+    if (!overall) return;
+
     setErr(null);
     setLoading(true);
     try {
       await saveFeedback({
-        rating,
-        comment,
-        contact_phone: contactPhone,
-        contact_email: contactEmail,
+        rating: overall,
+        food_rating: food,
+        service_rating: service,
+        atmosphere_rating: atmosphere,
+        comment: comment || null,
+        contact_phone: contactPhone || null,
+        contact_email: contactEmail || null,
       });
-      setMode("done_low");
+
+      // Simple success feedback
+      setComment("");
+      setContactPhone("");
+      setContactEmail("");
+      alert("Thank you 🙏 We received your feedback.");
     } catch (e: any) {
       setErr(e.message ?? "Something went wrong");
     } finally {
       setLoading(false);
     }
   }
+
+  const categoriesDisabled = overall === null || loading;
 
   return (
     <main className="card">
@@ -119,32 +187,97 @@ export default function HomePage() {
         <span className="badge">Feedback</span>
       </div>
 
-      {mode === "pick" && (
+      {/* OVERALL */}
+      <div style={{ marginTop: 14 }}>
+        <label className="label">Overall rating</label>
+        <StarRow value={overall} onPick={setOverall} disabled={loading} />
+
+        {mode === "high" && (
+          <p className="small">
+            Thanks! Please rate the details below — then we’ll take you to Google.
+          </p>
+        )}
+
+        {mode === "low" && (
+          <p className="small">
+            Thank you — please tell us what we can improve. (You won’t be redirected to Google.)
+          </p>
+        )}
+
+        {mode === "pick" && <p className="small">Tap a star to begin.</p>}
+      </div>
+
+      {/* DIVIDER */}
+      <div
+        style={{
+          margin: "22px 0 14px",
+          height: 1,
+          background: "#e5e7eb",
+          borderRadius: 999,
+        }}
+      />
+
+      {/* CATEGORY TITLE */}
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontWeight: 800, fontSize: 14, color: "#374151" }}>Rate the details</div>
+        <div style={{ fontSize: 12, color: "#6b7280" }}>
+          This helps us understand what we did well and what to improve
+        </div>
+      </div>
+
+      {/* CATEGORY BOX */}
+      <div
+        style={{
+          padding: 14,
+          borderRadius: 14,
+          background: "#f9fafb",
+          border: "1px solid #e5e7eb",
+        }}
+      >
+        <CategoryBlock title="Food" value={food} onPick={setFood} disabled={categoriesDisabled} />
+        <CategoryBlock
+          title="Service"
+          value={service}
+          onPick={setService}
+          disabled={categoriesDisabled}
+        />
+        <CategoryBlock
+          title="Atmosphere"
+          value={atmosphere}
+          onPick={setAtmosphere}
+          disabled={categoriesDisabled}
+        />
+
+        {overall === null && (
+          <div style={{ marginTop: 10, fontSize: 12, color: "#6b7280" }}>
+            Select an overall rating first.
+          </div>
+        )}
+      </div>
+
+      {/* LOW RATING APOLOGY */}
+      {mode === "low" && <div className="alert">{apologyText}</div>}
+
+      {/* FEEDBACK BOX */}
+      <label className="label">Feedback (optional)</label>
+      <textarea
+        className="textarea"
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Tell us what you liked or what we can improve..."
+        disabled={loading}
+      />
+
+      {/* CONTACT ONLY FOR LOW RATINGS */}
+      {mode === "low" && (
         <>
-          <label className="label">Tap a star</label>
-          <StarPicker value={rating} onPick={onPickRating} disabled={loading} />
-          <p className="small">Your feedback goes directly to the restaurant.</p>
-        </>
-      )}
-
-      {mode === "low_details" && (
-        <>
-          <div className="alert">{apologyText}</div>
-
-          <label className="label">What happened? (optional)</label>
-          <textarea
-            className="textarea"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Tell us what we can improve..."
-          />
-
           <label className="label">Phone (optional)</label>
           <input
             className="input"
             value={contactPhone}
             onChange={(e) => setContactPhone(e.target.value)}
             placeholder="+972..."
+            disabled={loading}
           />
 
           <label className="label">Email (optional)</label>
@@ -153,28 +286,23 @@ export default function HomePage() {
             value={contactEmail}
             onChange={(e) => setContactEmail(e.target.value)}
             placeholder="name@example.com"
+            disabled={loading}
           />
 
-          {err && <div className="error">{err}</div>}
-
-          <button className="btn" onClick={submitLowDetails} disabled={loading}>
+          <button className="btn" onClick={submitLow} disabled={loading}>
             {loading ? "Sending..." : "Send feedback"}
           </button>
-
-          <p className="small">
-            Thank you — we’ll use this to improve. (You will not be redirected to Google.)
-          </p>
         </>
       )}
 
-      {mode === "done_low" && (
-        <>
-          <h2 style={{ marginTop: 18, marginBottom: 6 }}>Thank you 🙏</h2>
-          <p className="p">We appreciate the feedback and will review it carefully.</p>
-        </>
+      {/* HIGH RATING HELPER */}
+      {mode === "high" && (
+        <p className="small">
+          After you select the category stars, you’ll be redirected automatically to leave a Google review.
+        </p>
       )}
 
-      {err && mode !== "low_details" && <div className="error">{err}</div>}
+      {err && <div className="error">{err}</div>}
     </main>
   );
 }

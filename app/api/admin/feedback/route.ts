@@ -4,9 +4,9 @@ import { ADMIN_COOKIE_NAME, verifyAdminToken } from "@/lib/adminAuth";
 import { supabaseAdmin } from "@/lib/supabase";
 
 export async function GET() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
-    
+  const cookieStore = await cookies();
+  const token = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
+
   if (!verifyAdminToken(token)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -14,9 +14,11 @@ export async function GET() {
   const supabase = supabaseAdmin();
   const { data, error } = await supabase
     .from("feedback")
-    .select("id,rating,comment,contact_phone,contact_email,created_at")
+    .select(
+      "id,rating,food_rating,service_rating,atmosphere_rating,comment,contact_phone,contact_email,created_at"
+    )
     .order("created_at", { ascending: false })
-    .limit(200);
+    .limit(500);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ data });
