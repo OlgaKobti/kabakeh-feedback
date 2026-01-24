@@ -1,0 +1,17 @@
+{
+    "title": "How was your experience today?",
+    "overall_rating": "Overall rating",
+    "rate_the_details": "Rate the details",
+    "details_hint": "This helps us understand what we did well and what to improve",
+    "neutral_prompt": "Please let us know what we can improve.",
+    "feedback_optional": "Feedback (optional)",
+    "food": "Food",
+    "service": "Service",
+    "atmosphere": "Atmosphere",
+    "phone_optional": "Phone (optional)",
+    "email_optional": "Email (optional)",
+    "send_feedback": "Send feedback",
+    "thank_you": "Thank you :) we received your feedback.",
+    "start_prompt": "Tap a star to begin."
+  }
+  

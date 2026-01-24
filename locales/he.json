@@ -1,0 +1,17 @@
+{
+    "title": "איך הייתה החוויה שלכם היום?",
+    "overall_rating": "דירוג כללי",
+    "rate_the_details": "דרגו את הפרטים",
+    "details_hint": "זה עוזר לנו להבין מה היה טוב ומה נוכל לשפר",
+    "neutral_prompt": "אנא ספרו לנו מה נוכל לשפר.",
+    "feedback_optional": "משוב (אופציונלי)",
+    "food": "אוכל",
+    "service": "שירות",
+    "atmosphere": "אווירה",
+    "phone_optional": "טלפון (אופציונלי)",
+    "email_optional": "אימייל (אופציונלי)",
+    "send_feedback": "שליחת משוב",
+    "thank_you": "תודה — המשוב התקבל.",
+    "start_prompt": "לחצו על כוכב כדי להתחיל."
+  }
+  
