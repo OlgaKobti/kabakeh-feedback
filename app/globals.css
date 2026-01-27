@@ -155,3 +155,19 @@ html, body {
   color: #3730a3;
   border-radius: 999px;
 }
+
+.langBtn {
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.langBtn[aria-pressed="true"] {
+  border-color: var(--kabakeh-green);
+  color: var(--kabakeh-green);
+  background: rgba(46, 125, 50, 0.08);
+}
+

@@ -12,6 +12,7 @@
     "email_optional": "Email (optional)",
     "send_feedback": "Send feedback",
     "thank_you": "Thank you :) we received your feedback.",
-    "start_prompt": "Tap a star to begin."
+    "start_prompt": "Tap a star to begin.",
+    "generic_error": "Something went wrong. Please try again."
   }
   

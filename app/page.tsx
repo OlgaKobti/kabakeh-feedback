@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { Lang } from "@/lib/i18n";
+import { detectLang, isRtl, t } from "@/lib/i18n";
 
+/* ---------- Star UI ---------- */
 function StarRow({
   value,
   onPick,
@@ -60,8 +63,13 @@ function CategoryBlock({
   );
 }
 
+/* ---------- Main Page ---------- */
 export default function HomePage() {
   const googleUrl = process.env.NEXT_PUBLIC_GOOGLE_REVIEW_URL || "";
+
+  // Language
+  const [lang, setLang] = useState<Lang>("en");
+  const rtl = useMemo(() => isRtl(lang), [lang]);
 
   // Overall + category ratings
   const [overall, setOverall] = useState<number | null>(null);
@@ -69,7 +77,7 @@ export default function HomePage() {
   const [service, setService] = useState<number | null>(null);
   const [atmosphere, setAtmosphere] = useState<number | null>(null);
 
-  // Feedback (for low ratings encouraged, for high ratings optional)
+  // Feedback
   const [comment, setComment] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [contactEmail, setContactEmail] = useState("");
@@ -77,81 +85,83 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
-  // Modes:
-  // - "high": overall >= 4 (auto-submit+redirect once categories are chosen)
-  // - "low":  overall <= 3 (apology + submit button, no Google redirect)
-  // - "pick": nothing selected yet
-  const mode = overall === null ? "pick" : overall >= 4 ? "high" : "low";
-
-  // Star color mode: low = red, high = green
+  // Star color: low (<=3) -> red, otherwise green
   const starColor: "green" | "red" = overall !== null && overall <= 3 ? "red" : "green";
 
-  const apologyText = useMemo(
-    () =>
-      "We’re sorry you had a bad experience. Thank you for telling us — we truly appreciate it and we’ll do our best to make your next visit better. If you can share what happened, it will really help us improve.",
-    []
-  );
+  // Prevent multiple immediate redirects
+  const didRedirectRef = useRef(false);
 
-  // Prevent double-submits when redirecting
-  const didAutoSubmitRef = useRef(false);
+  useEffect(() => {
+    const initial = detectLang();
+    setLang(initial);
+  }, []);
 
-  async function saveFeedback(payload: any) {
-    const res = await fetch("/api/feedback", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data?.error || "Failed to submit");
+  function changeLang(next: Lang) {
+    setLang(next);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("kabakeh_lang", next);
+      // optional: reflect in URL (nice for sharing)
+      const url = new URL(window.location.href);
+      url.searchParams.set("lang", next);
+      window.history.replaceState({}, "", url.toString());
+    }
   }
 
-  // High-rating: auto submit + redirect ONLY when all ratings are selected
-  useEffect(() => {
-    async function run() {
-      if (mode !== "high") return;
-      if (loading) return;
+  async function saveFeedback(payload: any) {
+    try {
+      await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+    } catch (e) {
+      console.error("Background save failed", e);
+    }
+  }
 
-      const ready = overall && food && service && atmosphere;
-      if (!ready) return;
+  // If user picks 5 -> immediate redirect, no message about Google
+  function handlePickOverall(v: number) {
+    setOverall(v);
+    setErr(null);
 
-      if (!googleUrl) {
-        setErr("Google review link is not configured yet.");
-        return;
+    if (v === 5) {
+      if (didRedirectRef.current) return;
+      didRedirectRef.current = true;
+
+      const payload = {
+        rating: 5,
+        food_rating: null,
+        service_rating: null,
+        atmosphere_rating: null,
+        comment: null,
+      };
+
+      const sent =
+        typeof navigator !== "undefined" &&
+        "sendBeacon" in navigator &&
+        (() => {
+          try {
+            const url = "/api/feedback";
+            const body = JSON.stringify(payload);
+            const blob = new Blob([body], { type: "application/json" });
+            return (navigator as any).sendBeacon(url, blob);
+          } catch {
+            return false;
+          }
+        })();
+
+      if (!sent) {
+        saveFeedback(payload);
       }
 
-      if (didAutoSubmitRef.current) return;
-      didAutoSubmitRef.current = true;
-
-      setErr(null);
-      setLoading(true);
-      try {
-        await saveFeedback({
-          rating: overall,
-          food_rating: food,
-          service_rating: service,
-          atmosphere_rating: atmosphere,
-          comment: comment || null, // optional even for high ratings
-        });
-
-        // Redirect to Google after saving
+      if (googleUrl) {
         window.location.href = googleUrl;
-      } catch (e: any) {
-        didAutoSubmitRef.current = false; // allow retry
-        setErr(e.message ?? "Something went wrong");
-      } finally {
-        setLoading(false);
+      } else {
+        setErr(t(lang, "generic_error"));
+        didRedirectRef.current = false;
       }
     }
-
-    run();
-  }, [mode, overall, food, service, atmosphere, googleUrl, loading, comment]);
-
-  // Reset auto-submit lock if user changes overall rating
-  useEffect(() => {
-    didAutoSubmitRef.current = false;
-    setErr(null);
-  }, [overall]);
+  }
 
   async function submitLow() {
     if (loading) return;
@@ -160,32 +170,63 @@ export default function HomePage() {
     setErr(null);
     setLoading(true);
     try {
-      await saveFeedback({
-        rating: overall,
-        food_rating: food,
-        service_rating: service,
-        atmosphere_rating: atmosphere,
-        comment: comment || null,
-        contact_phone: contactPhone || null,
-        contact_email: contactEmail || null,
+      await fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          rating: overall,
+          food_rating: food ?? null,
+          service_rating: service ?? null,
+          atmosphere_rating: atmosphere ?? null,
+          comment: comment || null,
+          contact_phone: contactPhone || null,
+          contact_email: contactEmail || null,
+        }),
       });
 
-      // Simple success feedback
       setComment("");
       setContactPhone("");
       setContactEmail("");
-      alert("Thank you 🙏 We received your feedback.");
+      alert(t(lang, "thank_you"));
     } catch (e: any) {
-      setErr(e.message ?? "Something went wrong");
+      setErr(e?.message ?? "Failed to send feedback.");
     } finally {
       setLoading(false);
     }
   }
 
-  const categoriesDisabled = overall === null || loading;
+  const categoriesDisabled = overall === null || loading || overall === 5;
 
   return (
-    <main className="card">
+    <main className="card" dir={rtl ? "rtl" : "ltr"}>
+      {/* Language switch */}
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBottom: 10 }}>
+        <button
+          type="button"
+          onClick={() => changeLang("en")}
+          className="langBtn"
+          aria-pressed={lang === "en"}
+        >
+          EN
+        </button>
+        <button
+          type="button"
+          onClick={() => changeLang("he")}
+          className="langBtn"
+          aria-pressed={lang === "he"}
+        >
+          עברית
+        </button>
+        <button
+          type="button"
+          onClick={() => changeLang("ar")}
+          className="langBtn"
+          aria-pressed={lang === "ar"}
+        >
+          العربية
+        </button>
+      </div>
+
       <div className="headerRow">
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <div
@@ -216,7 +257,7 @@ export default function HomePage() {
             <h1 className="h1" style={{ marginBottom: 2 }}>
               Kabakeh
             </h1>
-            <p className="p">How was your experience today?</p>
+            <p className="p">{t(lang, "title")}</p>
           </div>
         </div>
 
@@ -225,22 +266,11 @@ export default function HomePage() {
 
       {/* OVERALL */}
       <div style={{ marginTop: 14 }}>
-        <label className="label">Overall rating</label>
-        <StarRow value={overall} onPick={setOverall} disabled={loading} color={starColor} />
-
-        {mode === "high" && (
-          <p className="small">
-            Thanks! Please rate the details below — then we’ll take you to Google.
-          </p>
+        <label className="label">{t(lang, "overall_rating")}</label>
+        <StarRow value={overall} onPick={handlePickOverall} disabled={loading} color={starColor} />
+        {overall === null && (
+        <p className="small">{t(lang, "start_prompt")}</p>
         )}
-
-        {mode === "low" && (
-          <p className="small">
-            Thank you — please tell us what we can improve. (You won’t be redirected to Google.)
-          </p>
-        )}
-
-        {mode === "pick" && <p className="small">Tap a star to begin.</p>}
       </div>
 
       {/* DIVIDER */}
@@ -255,10 +285,10 @@ export default function HomePage() {
 
       {/* CATEGORY TITLE */}
       <div style={{ marginBottom: 10 }}>
-        <div style={{ fontWeight: 800, fontSize: 14, color: "#374151" }}>Rate the details</div>
-        <div style={{ fontSize: 12, color: "#6b7280" }}>
-          This helps us understand what we did well and what to improve
+        <div style={{ fontWeight: 800, fontSize: 14, color: "#374151" }}>
+          {t(lang, "rate_the_details")}
         </div>
+        <div style={{ fontSize: 12, color: "#6b7280" }}>{t(lang, "details_hint")}</div>
       </div>
 
       {/* CATEGORY BOX */}
@@ -271,21 +301,21 @@ export default function HomePage() {
         }}
       >
         <CategoryBlock
-          title="Food"
+          title={t(lang, "food")}
           value={food}
           onPick={setFood}
           disabled={categoriesDisabled}
           color={starColor}
         />
         <CategoryBlock
-          title="Service"
+          title={t(lang, "service")}
           value={service}
           onPick={setService}
           disabled={categoriesDisabled}
           color={starColor}
         />
         <CategoryBlock
-          title="Atmosphere"
+          title={t(lang, "atmosphere")}
           value={atmosphere}
           onPick={setAtmosphere}
           disabled={categoriesDisabled}
@@ -294,28 +324,25 @@ export default function HomePage() {
 
         {overall === null && (
           <div style={{ marginTop: 10, fontSize: 12, color: "#6b7280" }}>
-            Select an overall rating first.
+            {t(lang, "start_prompt")}
           </div>
         )}
       </div>
 
-      {/* LOW RATING APOLOGY */}
-      {mode === "low" && <div className="alert">{apologyText}</div>}
-
       {/* FEEDBACK BOX */}
-      <label className="label">Feedback (optional)</label>
+      <label className="label">{t(lang, "feedback_optional")}</label>
       <textarea
         className="textarea"
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        placeholder="Tell us what you liked or what we can improve..."
+        placeholder={t(lang, "feedback_optional")}
         disabled={loading}
       />
 
-      {/* CONTACT ONLY FOR LOW RATINGS */}
-      {mode === "low" && (
+      {/* CONTACT + SUBMIT only for 1-4 */}
+      {overall !== 5 && (
         <>
-          <label className="label">Phone (optional)</label>
+          <label className="label">{t(lang, "phone_optional")}</label>
           <input
             className="input"
             value={contactPhone}
@@ -324,7 +351,7 @@ export default function HomePage() {
             disabled={loading}
           />
 
-          <label className="label">Email (optional)</label>
+          <label className="label">{t(lang, "email_optional")}</label>
           <input
             className="input"
             value={contactEmail}
@@ -334,17 +361,9 @@ export default function HomePage() {
           />
 
           <button className="btn" onClick={submitLow} disabled={loading}>
-            {loading ? "Sending..." : "Send feedback"}
+            {loading ? "..." : t(lang, "send_feedback")}
           </button>
         </>
-      )}
-
-      {/* HIGH RATING HELPER */}
-      {mode === "high" && (
-        <p className="small">
-          After you select the category stars, you’ll be redirected automatically to leave a Google
-          review.
-        </p>
       )}
 
       {err && <div className="error">{err}</div>}
