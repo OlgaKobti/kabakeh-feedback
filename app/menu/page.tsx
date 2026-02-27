@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MENU, type Lang, type MenuCategory } from "@/data/menu";
+import { MENU, menuImageUrl, type Lang, type MenuCategory } from "@/data/menu";
 import { detectLang, isRtl } from "@/lib/i18n";
 
-const UI: Record<Lang, { title: string; search: string; currency: string }> = {
-  en: { title: "Menu", search: "Search…", currency: "₪" },
-  he: { title: "תפריט", search: "חיפוש…", currency: "₪" },
-  ar: { title: "قائمة الطعام", search: "بحث…", currency: "₪" },
+const UI: Record<Lang, { title: string; search: string; currency: string; empty: string }> = {
+  en: { title: "Menu", search: "Search…", currency: "₪", empty: "No items found." },
+  he: { title: "תפריט", search: "חיפוש…", currency: "₪", empty: "לא נמצאו מנות." },
+  ar: { title: "قائمة الطعام", search: "بحث…", currency: "₪", empty: "لم يتم العثور على عناصر." },
 };
 
 function langLabel(l: Lang) {
@@ -17,26 +17,21 @@ function langLabel(l: Lang) {
 }
 
 export default function MenuPage() {
-  // Start with Hebrew by default
-const [lang, setLang] = useState<Lang>("he");
+  // ✅ Default language should be Hebrew
+  const [lang, setLang] = useState<Lang>("he");
 
-// Then attempt to detect stored or user preference
-useEffect(() => {
-  const initial = detectLang();
-  if (initial === "he" || initial === "ar") {
-    setLang(initial);
-  }
-}, []);
+  // ✅ Set language ONCE from stored preference / url (detectLang already handles that)
+  useEffect(() => {
+    const initial = detectLang() as Lang;
+    if (initial === "en" || initial === "he" || initial === "ar") setLang(initial);
+  }, []);
+
   const rtl = useMemo(() => isRtl(lang), [lang]);
 
   const [q, setQ] = useState("");
 
   // section refs for scroll-to-category
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
-
-  useEffect(() => {
-    setLang(detectLang() as Lang);
-  }, []);
 
   function changeLang(next: Lang) {
     setLang(next);
@@ -55,7 +50,7 @@ useEffect(() => {
     return MENU.map((cat) => {
       const items = cat.items.filter((it) => {
         const n = it.name[lang]?.toLowerCase() ?? "";
-        const d = it.description?.[lang]?.toLowerCase() ?? "";
+        const d = (it.description?.[lang] ?? "").toLowerCase();
         return n.includes(query) || d.includes(query);
       });
       return { ...cat, items };
@@ -75,12 +70,7 @@ useEffect(() => {
       <div className="menuTop">
         <div className="menuTopLeft">
           <div className="menuLogoCircle">
-            <img
-              src="/logo.jpg"
-              alt="Kabakeh logo"
-              className="menuLogoImg"
-              draggable={false}
-            />
+            <img src="/logo.jpg" alt="Kabakeh logo" className="menuLogoImg" draggable={false} />
           </div>
           <div>
             <div className="menuBrand">Kabakeh</div>
@@ -89,7 +79,7 @@ useEffect(() => {
         </div>
 
         <div className="menuLang">
-          {(["en", "he", "ar"] as Lang[]).map((l) => (
+          {(["he", "ar", "en"] as Lang[]).map((l) => (
             <button
               key={l}
               type="button"
@@ -116,12 +106,7 @@ useEffect(() => {
       {/* Category tabs */}
       <div className="menuTabs">
         {MENU.map((cat) => (
-          <button
-            key={cat.id}
-            type="button"
-            className="menuTab"
-            onClick={() => scrollToCategory(cat.id)}
-          >
+          <button key={cat.id} type="button" className="menuTab" onClick={() => scrollToCategory(cat.id)}>
             {cat.title[lang]}
           </button>
         ))}
@@ -140,46 +125,47 @@ useEffect(() => {
             <h2 className="menuSectionTitle">{cat.title[lang]}</h2>
 
             <div className="menuGrid">
-              {cat.items.map((it) => (
-                <div key={it.id} className="menuCard">
-                  {/* Image placeholder (we’ll enable later) */}
-                  {it.image ? (
-                    <img
-                    src={it.image}
-                    alt={it.name[lang]}
-                    className="menuItemImg"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = "none";
-                    }}
-                  />
-                  ) : (
-                    <div className="menuItemImgPlaceholder" />
-                  )}
+              {cat.items.map((it) => {
+                const img = menuImageUrl(it.image);
+                const desc = (it.description?.[lang] ?? "").trim();
 
-                  <div className="menuCardBody">
-                    <div className="menuRow">
-                      <div className="menuItemName">{it.name[lang]}</div>
-                      {typeof it.price === "number" && (
-                        <div className="menuPrice">
-                          {it.price}
-                          {UI[lang].currency}
-                        </div>
-                      )}
-                    </div>
-
-                    {it.description?.[lang] && (
-                      <div className="menuDesc">{it.description[lang]}</div>
+                return (
+                  <div key={it.id} className="menuCard">
+                    {img ? (
+                      <img
+                        src={img}
+                        alt={it.name[lang]}
+                        className="menuItemImg"
+                        onError={(e) => {
+                          // hide broken images
+                          (e.currentTarget as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <div className="menuItemImgPlaceholder" />
                     )}
+
+                    <div className="menuCardBody">
+                      <div className="menuRow">
+                        <div className="menuItemName">{it.name[lang]}</div>
+                        {typeof it.price === "number" && (
+                          <div className="menuPrice">
+                            {it.price}
+                            {UI[lang].currency}
+                          </div>
+                        )}
+                      </div>
+
+                      {desc.length > 0 && <div className="menuDesc">{desc}</div>}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
         ))}
 
-        {filteredMenu.length === 0 && (
-          <div className="menuEmpty">No items found.</div>
-        )}
+        {filteredMenu.length === 0 && <div className="menuEmpty">{UI[lang].empty}</div>}
       </div>
     </main>
   );
