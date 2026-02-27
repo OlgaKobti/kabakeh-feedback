@@ -127,8 +127,8 @@ export const MENU_ITEMS: MenuItem[] = [
     category: "starters",
     price: 46,
     image: null,
-    name: { en: "Fried cauliflower with tahini", he: "זהרה", ar: "قرنبيط مقلي مع طحينة" },
-    description: { en: "", he: "כרובית עם טחינה", ar: "" },
+    name: { en: "Zahra", he: "זהרה", ar: "زهرة" },
+    description: { en: "Cauliflower with tahini", he: "כרובית עם טחינה", ar: "قرنبيط مع طحينة" },
   },
   {
     id: "jibneh",
@@ -136,7 +136,7 @@ export const MENU_ITEMS: MenuItem[] = [
     price: 45,
     image: "jebneh_fingers.jpg",
     name: { en: "Jibneh", he: "ג׳יבנה", ar: "جبنة" },
-    description: { en: "Fried Arabic cheese", he: "גבינה ערבית צרובה", ar: "جبنة عربية مقلية" },
+    description: { en: "Arabic cheese", he: "גבינה ערבית צרובה", ar: "جبنة عربية مقلية" },
   },
   {
     id: "baba_ghanouj",
