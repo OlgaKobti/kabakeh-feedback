@@ -171,3 +171,195 @@ html, body {
   background: rgba(46, 125, 50, 0.08);
 }
 
+/* ---------- Menu page ---------- */
+.menuWrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.menuTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.menuTopLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menuLogoCircle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.menuLogoImg {
+  height: 44px;
+  width: auto;
+  transform: translateX(2px) translateY(1px) scale(1.05);
+}
+
+.menuBrand {
+  font-weight: 900;
+  font-size: 14px;
+  color: #111827;
+}
+
+.menuTitle {
+  font-weight: 800;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.menuLang {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.menuSearchRow {
+  margin-bottom: 10px;
+}
+
+.menuSearch {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 14px;
+  outline: none;
+}
+
+.menuSearch:focus {
+  border-color: var(--kabakeh-green);
+  box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.12);
+}
+
+.menuTabs {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  margin-bottom: 16px;
+}
+
+.menuTab {
+  white-space: nowrap;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.menuTab:hover {
+  border-color: var(--kabakeh-green);
+}
+
+.menuContent {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.menuSectionTitle {
+  font-size: 16px;
+  font-weight: 900;
+  margin: 6px 0 10px;
+  color: #111827;
+}
+
+.menuGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+@media (min-width: 720px) {
+  .menuGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.menuCard {
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  gap: 12px;
+}
+
+.menuItemImg {
+  width: 110px;
+  height: 110px;
+  object-fit: cover;
+  background: #f3f4f6;
+}
+
+.menuItemImgPlaceholder {
+  width: 110px;
+  height: 110px;
+  background: #f3f4f6;
+}
+
+.menuCardBody {
+  padding: 12px 12px 12px 0;
+  flex: 1;
+}
+
+[dir="rtl"] .menuCardBody {
+  padding: 12px 0 12px 12px;
+}
+
+.menuRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.menuItemName {
+  font-weight: 900;
+  font-size: 14px;
+  color: #111827;
+}
+
+.menuPrice {
+  font-weight: 900;
+  color: var(--kabakeh-green);
+  white-space: nowrap;
+}
+
+.menuDesc {
+  margin-top: 6px;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.35;
+}
+
+.menuEmpty {
+  padding: 18px;
+  text-align: center;
+  color: #6b7280;
+}
