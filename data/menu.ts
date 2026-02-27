@@ -95,7 +95,7 @@ export const MENU_ITEMS: MenuItem[] = [
     category: "starters",
     price: 49,
     image: "tabuleh2.jpg",
-    name: { en: "Tabbouleh salad", he: "טאבולה סלט", ar: "تبولة (سلطة)" },
+    name: { en: "Tabbouleh salad", he: "טאבולה סלט", ar: "تبولة" },
     description: { en: "", he: "", ar: "" },
   },
   {
