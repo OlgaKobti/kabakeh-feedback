@@ -218,21 +218,21 @@ export const MENU_ITEMS: MenuItem[] = [
     category: "main_dishes",
     price: 200,
     image: null,
-    name: { en: "Mixed grill", he: "מיקס גריל", ar: "مشكل مشاوي" },
+    name: { en: "Mixed grill", he: "פלטת בשרים על האש", ar: "مشكل مشاوي" },
     description: { en: "", he: "", ar: "" },
   },
   {
     id: "entrecote_300g",
     category: "main_dishes",
     price: 148,
-    image: null,
+    image: "antricot.jpg",
     name: { en: "Entrecote 300g", he: "אנטריקוט 300 גרם", ar: "ستيك انتريكوت 300 غرام" },
     description: { en: "", he: "", ar: "" },
   },
   {
     id: "fish_fillet",
     category: "main_dishes",
-    price: 120,
+    price: 71,
     image: "Fish_Fillet.jpg",
     name: { en: "Fish fillet", he: "פילה דג", ar: "فيليه سمك" },
     description: { en: "", he: "", ar: "" },
@@ -267,7 +267,7 @@ export const MENU_ITEMS: MenuItem[] = [
     price: 98,
     image: "cream_shrimp.jpg",
     name: { en: "Shrimp with garlic sauce", he: "שרימפס ברוטב שום", ar: "روبيان بصلصة الثوم" },
-    description: { en: "Shrimp with garlic sauce", he: "שרימפס ברוטב שום", ar: "روبيان بصلصة الثوم" },
+    description: { en: "Shrimp with garlic sauce", he: "קדירת שרימפס עם לימון, פלפל חריף ורטוב שום", ar: "روبيان بصلصة الثوم" },
   },
 
   /* ---------------- Plates ---------------- */
@@ -315,7 +315,7 @@ export const MENU_ITEMS: MenuItem[] = [
     category: "plates",
     price: 70,
     image: "Arayes_Shami.jpg",
-    name: { en: "Shami arayes", he: "עראיס שאמי", ar: "عرايس شامية" },
+    name: { en: "Shamia", he: "שאמיה", ar: "شامية" },
     description: { en: "", he: "", ar: "" },
   },
   {
@@ -323,7 +323,7 @@ export const MENU_ITEMS: MenuItem[] = [
     category: "plates",
     price: 70,
     image: "Sushi_Arayes.jpg",
-    name: { en: "Sushi arayes", he: "עראיס סושי", ar: "عرايس سوشي" },
+    name: { en: "Arayes", he: "עראיס", ar: "عرايس" },
     description: { en: "", he: "", ar: "" },
   },
   {
