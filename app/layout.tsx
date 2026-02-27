@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Kabakeh Menu",
   description: "Kabakeh Restaurant Menu",
   icons: {
-    icon: "/icon.png?v=2", // 👈 this is the tab icon
+    icon: "/favicon.ico",
   },
 };
 
