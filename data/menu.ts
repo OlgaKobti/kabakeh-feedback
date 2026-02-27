@@ -103,7 +103,7 @@ export const MENU_ITEMS: MenuItem[] = [
     category: "starters",
     price: 65,
     image: "moajanat.jpg",
-    name: { en: "Moajanat (4 pastries)", he: "מואג׳נאת", ar: "معجنات" },
+    name: { en: "Moajanat", he: "מואג׳נאת", ar: "معجنات" },
     description: { en: "", he: "", ar: "" },
   },
   {
