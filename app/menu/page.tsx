@@ -93,6 +93,10 @@ export default function MenuPage() {
         </div>
       </div>
 
+      <div className="menuHero">
+        <img src="/banner.jpg" alt="Kabakeh atmosphere" className="menuHeroImg" />
+      </div>
+
       {/* Search */}
       <div className="menuSearchRow">
         <input
@@ -167,6 +171,64 @@ export default function MenuPage() {
 
         {filteredMenu.length === 0 && <div className="menuEmpty">{UI[lang].empty}</div>}
       </div>
+      {/* ===== Footer / Contact Section ===== */}
+<div className="menuFooter">
+  <div className="menuFooterTitle">
+    {lang === "he"
+      ? "צרו קשר"
+      : lang === "ar"
+      ? "تواصل معنا"
+      : "Contact us"}
+  </div>
+
+  <div className="menuFooterGrid">
+    {/* Phone */}
+    <div className="menuFooterItem">
+      <a href="tel:036888843">
+        {lang === "he"
+          ? "טלפון"
+          : lang === "ar"
+          ? "هاتف"
+          : "Phone"}
+      </a>
+      <div className="menuFooterHint">03-688-8843</div>
+    </div>
+
+    {/* Instagram */}
+    <div className="menuFooterItem">
+      <a
+        href="https://www.instagram.com/kabakehrest?igsh=emdjbHY3YmswZTB1"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Instagram
+      </a>
+      <div className="menuFooterHint">@kabakehrest</div>
+    </div>
+
+    {/* Location */}
+    <div className="menuFooterItem">
+      <a
+        href="https://share.google/W3EPb92inEZdMSJT6"
+        target="_blank"
+        rel="noreferrer"
+      >
+        {lang === "he"
+          ? "מיקום"
+          : lang === "ar"
+          ? "الموقع"
+          : "Location"}
+      </a>
+      <div className="menuFooterHint">
+        {lang === "he"
+          ? "כיכר קדומים 6, תל אביב-יפו"
+          : lang === "ar"
+          ? "كيكار كدوميم 6، تل أبيب-يافا"
+          : "Kikar Kdumim 6, Tel Aviv-Yafo"}
+      </div>
+    </div>
+  </div>
+</div>
     </main>
   );
 }
