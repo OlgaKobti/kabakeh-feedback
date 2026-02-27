@@ -1,9 +1,12 @@
 {
-    "redirects": [
-      {
-        "source": "/",
-        "destination": "/menu",
-        "permanent": false
-      }
-    ]
-  }
+  "redirects": [
+    {
+      "source": "/",
+      "has": [
+        { "type": "host", "value": "menu.kabakeh.com" }
+      ],
+      "destination": "/menu",
+      "permanent": false
+    }
+  ]
+}
