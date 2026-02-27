@@ -15,9 +15,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Kabakeh Menu",
   description: "Kabakeh Restaurant Menu",
-  icons: {
-    icon: "/favicon.ico",
-  },
 };
 
 export default function RootLayout({
