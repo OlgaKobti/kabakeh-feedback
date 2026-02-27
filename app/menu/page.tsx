@@ -94,7 +94,7 @@ export default function MenuPage() {
       </div>
 
       <div className="menuHero">
-        <img src="/banner.jpg" alt="Kabakeh atmosphere" className="menuHeroImg" />
+        <img src="/banner2.jpg" alt="Kabakeh atmosphere" className="menuHeroImg" />
       </div>
 
       {/* Search */}
