@@ -330,7 +330,7 @@ export const MENU_ITEMS: MenuItem[] = [
   item("tea", "hot_drinks", { he: "תה נענע / צמחים", ar: "شاي نعنع / أعشاب", en: "Mint / herbal tea" }, { price: 12, description: { he: "צמחים 16", ar: "أعشاب 16", en: "Herbal 16" } }),
 
   // ---------------- Desserts ----------------
-  item("sufle", "desserts", { he: "סופלה שוקולד", ar: "سوفليه شوكولاتة", en: "Chocolate soufflé" }, { price: 45, image: "Minervas_Cake.jpg" }),
+  item("sufle", "desserts", { he: "סופלה שוקולד", ar: "سوفليه شوكولاتة", en: "Chocolate soufflé" }, { price: 45, image: null }),
   item("malabi", "desserts", { he: "מלבי", ar: "مهلبية", en: "Malabi" }, { price: 22, image: "malabi.jpg", description: { he: "סירופ, טחינה ואגוזים", ar: "شراب وطحينة ومكسرات", en: "Syrup, tahini and nuts" } }),
   item("layali_beirut", "desserts", { he: "ליאלי ביירות", ar: "ليالي بيروت", en: "Layali Beirut" }, { price: 38, image: "Layali_Beyrout.jpg", description: { he: "עוגת סולת קרה עם קרם וניל, סירופ מי סוכר ופיסטוקים מעל", ar: "كعكة سميد باردة مع كريمة فانيلا وقطر وفستق", en: "Cold semolina cake with vanilla cream, syrup and pistachios" } }),
   item("minerva_cake", "desserts", { he: "עוגת מינרווה", ar: "كيكة مينيرفا", en: "Minerva cake" }, { price: 52, image: "Minervas_Cake.jpg", description: { he: "עוגת סולת וגבינה, מוגשת חמה עם סירופ מתוק", ar: "كيكة سميد وجبنة تقدم ساخنة مع شراب حلو", en: "Semolina and cheese cake, served warm with sweet syrup" } }),
