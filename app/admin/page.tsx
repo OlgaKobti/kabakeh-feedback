@@ -68,7 +68,24 @@ export default function AdminPage() {
         </div>
       ) : (
         <>
-          <button onClick={loadFeedback} style={{ padding: 10 }}>Refresh</button>
+          <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+            <button onClick={loadFeedback} style={{ padding: "10px 16px" }}>Refresh</button>
+            <a
+              href="/admin/menu"
+              style={{
+                display: "inline-block",
+                padding: "10px 16px",
+                background: "#1a1a2e",
+                color: "#fff",
+                borderRadius: 6,
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: 14,
+              }}
+            >
+              🍽 Menu Management
+            </a>
+          </div>
           {err && <p style={{ color: "crimson" }}>{err}</p>}
 
           <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
