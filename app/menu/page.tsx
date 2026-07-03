@@ -4,6 +4,19 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { MENU, menuImageUrl, type Lang, type MenuCategory } from "@/data/menu";
 import { detectLang, isRtl } from "@/lib/i18n";
 
+function ItemImage({ src, alt }: { src: string; alt: string }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) return null;
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="menuItemImg"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
 const UI: Record<Lang, { title: string; search: string; currency: string; empty: string }> = {
   en: { title: "Menu", search: "Search…", currency: "₪", empty: "No items found." },
   he: { title: "תפריט", search: "חיפוש…", currency: "₪", empty: "לא נמצאו מנות." },
@@ -135,19 +148,7 @@ export default function MenuPage() {
 
                 return (
                   <div key={it.id} className="menuCard">
-                    {img ? (
-                      <img
-                        src={img}
-                        alt={it.name[lang]}
-                        className="menuItemImg"
-                        onError={(e) => {
-                          // hide broken images
-                          (e.currentTarget as HTMLImageElement).style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <div className="menuItemImgPlaceholder" />
-                    )}
+                    {img && <ItemImage src={img} alt={it.name[lang]} />}
 
                     <div className="menuCardBody">
                       <div className="menuRow">

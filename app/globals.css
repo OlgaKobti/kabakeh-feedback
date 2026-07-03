@@ -384,16 +384,7 @@ html, body {
 }
 
 .menuItemImgPlaceholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.menuItemImgPlaceholder::after {
-  content: "🍽️";
-  font-size: 28px;
-  opacity: 0.45;
+  display: none;
 }
 
 .menuCardBody {
