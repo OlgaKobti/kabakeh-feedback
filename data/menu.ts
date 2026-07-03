@@ -272,7 +272,7 @@ export const MENU_ITEMS: MenuItem[] = [
       en: "With freekeh (smoked green wheat) or hashwe (rice and minced meat), topped with almonds",
     },
   }),
-  item("harimeh", "mains", { he: "פרגית סטייק בגריל", ar: "ستيك فرخة مشوي", en: "Grilled pargit steak" }, {
+  item("harimeh", "mains", { he: "פרגית סטייק בגריל", ar: "ستيك فخذ دجاج مشوي", en: "Grilled chicken thigh steak" }, {
     price: 79,
     image: null,
     description: {
