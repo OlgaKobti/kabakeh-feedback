@@ -1,15 +1,15 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { ADMIN_COOKIE_NAME, verifyAdminToken } from "@/lib/adminAuth";
-import AdminLoginClient from "./AdminLoginClient";
+import FeedbackClient from "./FeedbackClient";
 
-export default async function AdminPage() {
+export default async function FeedbackPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_COOKIE_NAME)?.value;
 
-  if (verifyAdminToken(token)) {
-    redirect("/admin/dashboard");
+  if (!verifyAdminToken(token)) {
+    redirect("/admin");
   }
 
-  return <AdminLoginClient />;
+  return <FeedbackClient />;
 }

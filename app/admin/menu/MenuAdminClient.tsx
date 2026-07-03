@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { AdminShell } from "../components/AdminShell";
 
 type DbCategory = {
   id: string;
@@ -213,9 +214,9 @@ export default function MenuAdminClient() {
 
   if (loading) {
     return (
-      <main style={{ padding: 32, fontFamily: "system-ui", textAlign: "center", color: "#666" }}>
-        Loading menu…
-      </main>
+      <AdminShell active="menu">
+        <div style={{ textAlign: "center", color: "#9ca3af", padding: 48 }}>Loading menu…</div>
+      </AdminShell>
     );
   }
 
@@ -223,20 +224,14 @@ export default function MenuAdminClient() {
   const previewUrl = formItem ? itemImageUrl(formItem.image) : null;
 
   return (
-    <main style={{ maxWidth: 960, margin: "0 auto", padding: "24px 16px", fontFamily: "system-ui" }}>
+    <AdminShell active="menu">
       {/* Header */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 28 }}>
         <div>
-          <a
-            href="/admin"
-            style={{ color: "#6b7280", fontSize: 13, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
-          >
-            ← Back to Admin
-          </a>
-          <h1 style={{ fontSize: 26, fontWeight: 700, margin: "6px 0 0", color: "#111" }}>
+          <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 4px", color: "#111" }}>
             Menu Management
           </h1>
-          <p style={{ color: "#6b7280", fontSize: 13, margin: "4px 0 0" }}>
+          <p style={{ color: "#6b7280", fontSize: 14, margin: 0 }}>
             {items.length} dishes across {categories.length} categories
           </p>
         </div>
@@ -824,6 +819,6 @@ export default function MenuAdminClient() {
           </div>
         </div>
       )}
-    </main>
+    </AdminShell>
   );
 }
