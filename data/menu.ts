@@ -351,7 +351,7 @@ export const MENU_ITEMS: MenuItem[] = [
   item("red_shvo", "red_wine", { he: "אדום, שבו", ar: "أحمر، شڤو", en: "Red, Shvo" }, { price: 193 }),
 
   // ---------------- Arak / alcohol ----------------
-  item("arak_glass", "arak", { he: "כוס ערק", ar: "كأس عرق", en: "Arak glass" }, { price: 35, image: "arak_small.jpg", description: { he: "ערק בייצור ביתי מענבים ואניס ירוק", ar: "عرق محلي من العنب واليانسون الأخضر", en: "Homemade arak from grapes and green anise" } }),
+  item("arak_glass", "arak", { he: "כוס ערק", ar: "كأس عرق", en: "Arak glass" }, { price: 35, image: null, description: { he: "ערק בייצור ביתי מענבים ואניס ירוק", ar: "عرق محلي من العنب واليانسون الأخضر", en: "Homemade arak from grapes and green anise" } }),
   item("arak_pitcher", "arak", { he: "קנקן ערק", ar: "إبريق عرق", en: "Arak pitcher" }, { price: 110, image: "arak_big.jpg", description: { he: "עם מים וקרח", ar: "مع ماء وثلج", en: "With water and ice" } }),
   item("arak_bottle", "arak", { he: "בקבוק ערק 750מ״ל", ar: "زجاجة عرق 750 مل", en: "Arak bottle 750ml" }, { price: 190 }),
   item("arak_pomegranate", "arak", { he: "קוקטייל ערק רימונים", ar: "كوكتيل عرق رمان", en: "Pomegranate arak cocktail" }, { price: 44 }),
