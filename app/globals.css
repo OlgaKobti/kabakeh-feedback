@@ -332,6 +332,11 @@ html, body {
   padding: 12px 0 12px 12px;
 }
 
+.menuCard--noImage .menuCardBody,
+[dir="rtl"] .menuCard--noImage .menuCardBody {
+  padding: 14px 18px;
+}
+
 .menuRow {
   display: flex;
   align-items: baseline;

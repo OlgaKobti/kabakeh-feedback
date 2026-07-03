@@ -147,7 +147,7 @@ export default function MenuPage() {
                 const desc = (it.description?.[lang] ?? "").trim();
 
                 return (
-                  <div key={it.id} className="menuCard">
+                  <div key={it.id} className={`menuCard${img ? "" : " menuCard--noImage"}`}>
                     {img && <ItemImage src={img} alt={it.name[lang]} />}
 
                     <div className="menuCardBody">
