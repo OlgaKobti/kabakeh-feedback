@@ -2,11 +2,22 @@
   "redirects": [
     {
       "source": "/",
-      "has": [
-        { "type": "host", "value": "menu.kabakeh.com" }
-      ],
+      "has": [{ "type": "host", "value": "menu.kabakeh.com" }],
       "destination": "/menu",
       "permanent": false
+    },
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "www.kabakeh.com" }],
+      "destination": "https://kabakeh.com",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "host", "value": "kabakeh.com" }],
+      "destination": "/home"
     }
   ],
   "crons": [
