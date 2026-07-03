@@ -76,7 +76,7 @@ export const MENU_CATEGORIES: Omit<MenuCategory, "items">[] = [
   { id: "white_wine", title: { he: "יין לבן", ar: "نبيذ أبيض", en: "White wine" } },
   { id: "rose_wine", title: { he: "יין רוזה", ar: "نبيذ روزيه", en: "Rosé wine" } },
   { id: "red_wine", title: { he: "יין אדום", ar: "نبيذ أحمر", en: "Red wine" } },
-  { id: "arak", title: { he: "ערק ענבה", ar: "عرق عنبة", en: "Arak Anabeh" } },
+  { id: "arak", title: { he: "ערק עזבה", ar: "عرق عزبة", en: "Arak Ezba" } },
   { id: "alcohol", title: { he: "אלכוהול", ar: "كحول", en: "Alcohol" } },
 ];
 
