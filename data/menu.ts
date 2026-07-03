@@ -272,9 +272,9 @@ export const MENU_ITEMS: MenuItem[] = [
       en: "With freekeh (smoked green wheat) or hashwe (rice and minced meat), topped with almonds",
     },
   }),
-  item("harimeh", "mains", { he: "חרגית סטייק בגריל", ar: "ستيك هراغيت مشوي", en: "Grilled haragit steak" }, {
+  item("harimeh", "mains", { he: "פרגית סטייק בגריל", ar: "ستيك فرخة مشوي", en: "Grilled pargit steak" }, {
     price: 79,
-    image: "harisa.jpg",
+    image: null,
     description: {
       he: "מוגש עם אורז לבן ואטריות",
       ar: "يقدم مع أرز أبيض وشعيرية",
