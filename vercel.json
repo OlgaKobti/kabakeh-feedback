@@ -11,6 +11,12 @@
       "has": [{ "type": "host", "value": "www.kabakeh.com" }],
       "destination": "https://kabakeh.com",
       "permanent": true
+    },
+    {
+      "source": "/home",
+      "missing": [{ "type": "host", "value": "kabakeh.com" }],
+      "destination": "/",
+      "permanent": false
     }
   ],
   "rewrites": [
