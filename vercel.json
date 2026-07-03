@@ -8,5 +8,11 @@
       "destination": "/menu",
       "permanent": false
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/keepalive",
+      "schedule": "0 8 * * *"
+    }
   ]
 }
