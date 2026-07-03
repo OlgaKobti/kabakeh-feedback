@@ -17,10 +17,10 @@ function ItemImage({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-const UI: Record<Lang, { title: string; search: string; currency: string; empty: string }> = {
-  en: { title: "Menu", search: "Search…", currency: "₪", empty: "No items found." },
-  he: { title: "תפריט", search: "חיפוש…", currency: "₪", empty: "לא נמצאו מנות." },
-  ar: { title: "قائمة الطعام", search: "بحث…", currency: "₪", empty: "لم يتم العثور على عناصر." },
+const UI: Record<Lang, { title: string; search: string; currency: string; empty: string; tagline: string }> = {
+  en: { title: "Menu", search: "Search…", currency: "₪", empty: "No items found.", tagline: "Authentic Arab cuisine" },
+  he: { title: "תפריט", search: "חיפוש…", currency: "₪", empty: "לא נמצאו מנות.", tagline: "מסעדה ערבית אותנטית" },
+  ar: { title: "قائمة الطعام", search: "بحث…", currency: "₪", empty: "لم يتم العثور على عناصر.", tagline: "مطعم عربي أصيل" },
 };
 
 function langLabel(l: Lang) {
@@ -108,6 +108,10 @@ export default function MenuPage() {
 
       <div className="menuHero">
         <img src="/atmos.jpg" alt="Kabakeh atmosphere" className="menuHeroImg" />
+        <div className="menuHeroOverlay">
+          <div className="menuHeroName">Kabakeh</div>
+          <div className="menuHeroTagline">{UI[lang].tagline}</div>
+        </div>
       </div>
 
       {/* Search */}
