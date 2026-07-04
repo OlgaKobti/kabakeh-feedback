@@ -14,6 +14,8 @@ async function getStats() {
       { count: photoCount },
       { count: inquiryCount },
       { count: unreadCount },
+      { count: bookingCount },
+      { count: pendingBookingCount },
     ] = await Promise.all([
       supabase.from("feedback").select("id", { count: "exact", head: true }),
       supabase.from("menu_items").select("id", { count: "exact", head: true }),
@@ -21,6 +23,8 @@ async function getStats() {
       supabase.from("gallery_photos").select("id", { count: "exact", head: true }),
       supabase.from("private_inquiries").select("id", { count: "exact", head: true }),
       supabase.from("private_inquiries").select("id", { count: "exact", head: true }).eq("is_read", false),
+      supabase.from("event_bookings").select("id", { count: "exact", head: true }),
+      supabase.from("event_bookings").select("id", { count: "exact", head: true }).eq("status", "pending"),
     ]);
     return {
       feedbackCount: feedbackCount ?? 0,
@@ -29,9 +33,11 @@ async function getStats() {
       photoCount: photoCount ?? 0,
       inquiryCount: inquiryCount ?? 0,
       unreadCount: unreadCount ?? 0,
+      bookingCount: bookingCount ?? 0,
+      pendingBookingCount: pendingBookingCount ?? 0,
     };
   } catch {
-    return { feedbackCount: 0, itemCount: 0, eventCount: 0, photoCount: 0, inquiryCount: 0, unreadCount: 0 };
+    return { feedbackCount: 0, itemCount: 0, eventCount: 0, photoCount: 0, inquiryCount: 0, unreadCount: 0, bookingCount: 0, pendingBookingCount: 0 };
   }
 }
 

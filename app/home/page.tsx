@@ -35,6 +35,7 @@ const COPY: Record<Lang, {
   eventTypeLabel: string; guestsLabel: string; dateLabel: string; messageLabel: string;
   sendBtn: string; sentMsg: string;
   contact: string; phone: string; location: string; locationHint: string;
+  bookBtn: string; bookTitle: string; phoneLabel: string; bookSend: string; bookSent: string;
 }> = {
   he: {
     tagline: "מסעדה ערבית אותנטית",
@@ -51,6 +52,9 @@ const COPY: Record<Lang, {
     dateLabel: "תאריך מועדף", messageLabel: "פרטים נוספים",
     sendBtn: "שליחת פנייה", sentMsg: "תודה! קיבלנו את פנייתכם ונחזור אליכם בהקדם.",
     contact: "צרו קשר", phone: "טלפון", location: "מיקום", locationHint: "כיכר קדומים 6, תל אביב-יפו",
+    bookBtn: "הזמן מקום", bookTitle: "הזמנת מקום לאירוע",
+    phoneLabel: "מספר טלפון", bookSend: "שליחת בקשה",
+    bookSent: "תודה! קיבלנו את בקשתכם. נחזור אליכם בהקדם לאישור ההזמנה.",
   },
   ar: {
     tagline: "مطعم عربي أصيل",
@@ -67,6 +71,9 @@ const COPY: Record<Lang, {
     dateLabel: "التاريخ المفضل", messageLabel: "تفاصيل إضافية",
     sendBtn: "إرسال الطلب", sentMsg: "شكراً! استلمنا طلبك وسنتواصل معك قريباً.",
     contact: "تواصل معنا", phone: "هاتف", location: "الموقع", locationHint: "كيكار كدوميم 6، تل أبيب-يافا",
+    bookBtn: "احجز مقعداً", bookTitle: "حجز مقعد للفعالية",
+    phoneLabel: "رقم الهاتف", bookSend: "إرسال الطلب",
+    bookSent: "شكراً! استلمنا طلبك. سنتواصل معك قريباً لتأكيد الحجز.",
   },
   en: {
     tagline: "Authentic Arab cuisine",
@@ -83,6 +90,9 @@ const COPY: Record<Lang, {
     dateLabel: "Preferred date", messageLabel: "Additional details",
     sendBtn: "Send inquiry", sentMsg: "Thank you! We received your inquiry and will be in touch soon.",
     contact: "Contact us", phone: "Phone", location: "Location", locationHint: "Kikar Kdumim 6, Tel Aviv-Yafo",
+    bookBtn: "Book a spot", bookTitle: "Book a spot for this event",
+    phoneLabel: "Phone number", bookSend: "Send request",
+    bookSent: "Thank you! We received your request and will call you back shortly to confirm.",
   },
 };
 
@@ -114,6 +124,13 @@ export default function HomePage() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [sendError, setSendError] = useState("");
+
+  // Booking modal state
+  const [bookingEvent, setBookingEvent] = useState<Event | null>(null);
+  const [bookForm, setBookForm] = useState({ name: "", phone: "", guests_count: "", message: "" });
+  const [bookSending, setBookSending] = useState(false);
+  const [bookSent, setBookSent] = useState(false);
+  const [bookError, setBookError] = useState("");
 
   useEffect(() => {
     const initial = detectLang() as Lang;
@@ -154,6 +171,40 @@ export default function HomePage() {
     if (res.ok) { setSent(true); setForm({ name: "", contact: "", event_type: "", guests_count: "", preferred_date: "", message: "" }); }
     else { const d = await res.json(); setSendError(d.error ?? "שגיאה"); }
     setSending(false);
+  }
+
+  async function submitBooking(e: React.FormEvent) {
+    e.preventDefault();
+    if (!bookingEvent || !bookForm.name.trim() || !bookForm.phone.trim()) return;
+    setBookSending(true); setBookError("");
+    const title = (bookingEvent[`title_${lang}` as keyof Event] as string) || bookingEvent.title_he;
+    const res = await fetch("/api/bookings", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event_id: bookingEvent.id,
+        event_title: title,
+        event_date: bookingEvent.event_date,
+        name: bookForm.name,
+        phone: bookForm.phone,
+        guests_count: bookForm.guests_count || null,
+        message: bookForm.message || null,
+      }),
+    });
+    if (res.ok) { setBookSent(true); }
+    else { const d = await res.json(); setBookError(d.error ?? "שגיאה"); }
+    setBookSending(false);
+  }
+
+  function openBooking(ev: Event) {
+    setBookingEvent(ev);
+    setBookForm({ name: "", phone: "", guests_count: "", message: "" });
+    setBookSent(false);
+    setBookError("");
+  }
+
+  function closeBooking() {
+    setBookingEvent(null);
   }
 
   const today = todayDayKey();
@@ -271,6 +322,9 @@ export default function HomePage() {
                       <div className="homeEventTitle">{title}</div>
                       {ev.event_time && <div className="homeEventTime">🕐 {ev.event_time}</div>}
                       {desc && <div className="homeEventDesc">{desc}</div>}
+                      <button type="button" className="homeEventBookBtn" onClick={() => openBooking(ev)}>
+                        {t.bookBtn}
+                      </button>
                     </div>
                   </div>
                 </div>              );
@@ -362,6 +416,53 @@ export default function HomePage() {
         </div>
       </footer>
     </main>
+
+    {/* Booking modal */}
+    {bookingEvent && (
+      <div className="bookingOverlay" onClick={closeBooking}>
+        <div
+          className="bookingModal"
+          dir={rtl ? "rtl" : "ltr"}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button className="bookingClose" onClick={closeBooking} aria-label="Close">✕</button>
+          {(() => {
+            const evTitle = (bookingEvent[`title_${lang}` as keyof Event] as string) || bookingEvent.title_he;
+            const evDate = new Date(bookingEvent.event_date + "T12:00:00").toLocaleDateString(
+              lang === "he" ? "he-IL" : lang === "ar" ? "ar-SA" : "en-GB",
+              { day: "numeric", month: "long", year: "numeric" }
+            );
+            return (
+              <>
+                <div className="bookingModalHeader">
+                  <div className="bookingModalTitle">{t.bookTitle}</div>
+                  <div className="bookingModalEvent">{evTitle}</div>
+                  <div className="bookingModalDate">📅 {evDate}{bookingEvent.event_time ? ` · ${bookingEvent.event_time}` : ""}</div>
+                </div>
+                {bookSent ? (
+                  <div className="bookingSentMsg">{t.bookSent}</div>
+                ) : (
+                  <form onSubmit={submitBooking} className="bookingForm">
+                    <label className="bookingLabel">{t.nameLabel} *</label>
+                    <input style={inputStyle} value={bookForm.name} required onChange={(e) => setBookForm((f) => ({ ...f, name: e.target.value }))} />
+                    <label className="bookingLabel">{t.phoneLabel} *</label>
+                    <input style={inputStyle} type="tel" value={bookForm.phone} required onChange={(e) => setBookForm((f) => ({ ...f, phone: e.target.value }))} />
+                    <label className="bookingLabel">{t.guestsLabel}</label>
+                    <input style={inputStyle} type="number" min="1" value={bookForm.guests_count} onChange={(e) => setBookForm((f) => ({ ...f, guests_count: e.target.value }))} />
+                    <label className="bookingLabel">{t.messageLabel}</label>
+                    <textarea style={{ ...inputStyle, minHeight: 72, resize: "vertical" }} value={bookForm.message} onChange={(e) => setBookForm((f) => ({ ...f, message: e.target.value }))} />
+                    {bookError && <div style={{ color: "#c0392b", fontSize: 13 }}>{bookError}</div>}
+                    <button type="submit" className="bookingSubmitBtn" disabled={bookSending}>
+                      {bookSending ? "…" : t.bookSend}
+                    </button>
+                  </form>
+                )}
+              </>
+            );
+          })()}
+        </div>
+      </div>
+    )}
     </>
   );
 }
