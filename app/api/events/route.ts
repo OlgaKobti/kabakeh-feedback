@@ -4,10 +4,14 @@ import { supabaseAnon } from "@/lib/supabase";
 export async function GET() {
   const supabase = supabaseAnon();
 
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const cutoff = oneWeekAgo.toISOString().slice(0, 10);
+
   const { data, error } = await supabase
     .from("events")
     .select("id, title_he, title_ar, title_en, description_he, description_ar, description_en, event_date, event_time, image_url, is_sold_out")
-    .gte("event_date", new Date().toISOString().slice(0, 10))
+    .gte("event_date", cutoff)
     .order("event_date", { ascending: true })
     .limit(20);
 
