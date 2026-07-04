@@ -207,7 +207,6 @@ html, body {
 .menuLogoImg {
   height: 44px;
   width: auto;
-  transform: translateX(2px) translateY(1px) scale(1.05);
 }
 
 .menuBrand {
