@@ -189,8 +189,13 @@ export default function HomePage() {
       {/* Hero — full-screen text over the animated background */}
       <div className="homeHero">
         <div className="homeHeroOverlay">
-          <h1 className="homeHeroName">Kabakeh</h1>
-          <p className="homeHeroTagline">{t.tagline}</p>
+          <div className="homeHeroTitle">
+            <img src="/logo.jpg" alt="Kabakeh" className="homeHeroLogo" />
+            <div>
+              <h1 className="homeHeroName">Kabakeh</h1>
+              <p className="homeHeroTagline">{t.tagline}</p>
+            </div>
+          </div>
         </div>
       </div>
 

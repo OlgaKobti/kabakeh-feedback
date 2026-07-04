@@ -618,16 +618,16 @@ html, body {
 
 /* Override logo circle for home page dark header */
 .homeTop .menuLogoCircle {
-  background: transparent;
+  background: rgba(255,255,255,0.9);
   border: none;
-  box-shadow: none;
-  width: 38px;
-  height: 38px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.3);
+  width: 36px;
+  height: 36px;
 }
 .homeTop .menuLogoImg {
-  mix-blend-mode: multiply;
-  width: 38px;
-  height: 38px;
+  mix-blend-mode: normal;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
 }
 .homeTop .menuBrand { color: #fff; }
@@ -671,25 +671,48 @@ html, body {
 }
 
 .homeHero {
-  min-height: 38vh;
+  min-height: 22vh;
   display: flex;
   align-items: flex-end;
-  padding-bottom: 32px;
+  padding-bottom: 28px;
 }
 
 @media (min-width: 600px) {
-  .homeHero { min-height: 46vh; }
+  .homeHero { min-height: 30vh; }
 }
 
-.homeHeroImg { display: none; } /* kept for safety, hidden */
+.homeHeroImg { display: none; }
 
 .homeHeroOverlay {
-  padding: 0 8px 0;
+  padding: 0 24px;
+  direction: ltr;
+  text-align: left;
+  width: 100%;
+}
+
+.homeHeroTitle {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.homeHeroLogo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.7);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.35);
+  flex-shrink: 0;
+}
+
+@media (min-width: 600px) {
+  .homeHeroLogo { width: 72px; height: 72px; }
 }
 
 .homeHeroName {
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: 52px;
+  font-size: 48px;
   font-weight: 700;
   color: #ffffff;
   margin: 0;
@@ -699,12 +722,12 @@ html, body {
 }
 
 @media (min-width: 600px) {
-  .homeHeroName { font-size: 72px; }
+  .homeHeroName { font-size: 64px; }
 }
 
 .homeHeroTagline {
-  margin-top: 10px;
-  font-size: 17px;
+  margin-top: 6px;
+  font-size: 15px;
   color: rgba(255, 255, 255, 0.88);
   font-style: italic;
   font-weight: 400;
