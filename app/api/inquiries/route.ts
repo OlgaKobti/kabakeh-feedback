@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { sendWhatsApp } from "@/lib/whatsapp";
 
 const EVENT_TYPE_LABELS: Record<string, string> = {
   birthday: "יום הולדת",
@@ -106,8 +107,19 @@ export async function POST(req: Request) {
   const { error } = await supabaseAdmin().from("private_inquiries").insert([record]);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Send email notification — fire and forget (don't fail the request if email fails)
+  const eventTypeLabel = record.event_type ? (EVENT_TYPE_LABELS[record.event_type] ?? record.event_type) : null;
+  const waText =
+    `📬 פנייה חדשה לאירוע פרטי!\n` +
+    `שם: ${record.name}\n` +
+    `טלפון/אימייל: ${record.contact}` +
+    (eventTypeLabel ? `\nסוג: ${eventTypeLabel}` : "") +
+    (record.guests_count ? `\nאורחים: ${record.guests_count}` : "") +
+    (record.preferred_date ? `\nתאריך: ${record.preferred_date}` : "") +
+    (record.message ? `\nהודעה: ${record.message}` : "") +
+    `\n\nלפרטים: https://feedback.kabakeh.com/admin/inquiries`;
+
   sendEmail(record).catch(() => {});
+  sendWhatsApp(waText).catch(() => {});
 
   return NextResponse.json({ ok: true }, { status: 201 });
 }

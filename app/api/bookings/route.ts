@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { sendWhatsApp } from "@/lib/whatsapp";
 
 async function sendEmail(body: {
   name: string;
@@ -101,7 +102,21 @@ export async function POST(req: Request) {
   const { error } = await supabaseAdmin().from("event_bookings").insert([record]);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  const dateStr = record.event_date
+    ? new Date(record.event_date + "T12:00:00").toLocaleDateString("he-IL", { day: "numeric", month: "long", year: "numeric" })
+    : "";
+
+  const waText =
+    `🎟️ הזמנה חדשה לאירוע!\n` +
+    `אירוע: ${record.event_title}${dateStr ? ` (${dateStr})` : ""}\n` +
+    `שם: ${record.name}\n` +
+    `טלפון: ${record.phone}` +
+    (record.guests_count ? `\nאורחים: ${record.guests_count}` : "") +
+    (record.message ? `\nהערה: ${record.message}` : "") +
+    `\n\nלפרטים: https://feedback.kabakeh.com/admin/bookings`;
+
   sendEmail(record).catch(() => {});
+  sendWhatsApp(waText).catch(() => {});
 
   return NextResponse.json({ ok: true }, { status: 201 });
 }
