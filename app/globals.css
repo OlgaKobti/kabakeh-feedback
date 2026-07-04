@@ -10,20 +10,30 @@ html, body {
 * { box-sizing: border-box; }
 
 :root {
-  /* Warm Mediterranean palette */
+  /* Restaurant brand palette — burgundy + forest green */
   --ka-bg:           #f9f5ef;
   --ka-card:         #ffffff;
   --ka-text:         #1a1714;
   --ka-muted:        #7c6f64;
   --ka-border:       #ede8e1;
   --ka-border-strong:#d6cfc6;
-  --ka-amber:        #c27d38;
-  --ka-amber-dark:   #a8632a;
-  --ka-amber-light:  rgba(194, 125, 56, 0.10);
 
-  /* Keep legacy names for feedback-system compatibility */
-  --kabakeh-green:      #c27d38;
-  --kabakeh-green-dark: #a8632a;
+  /* Burgundy — primary accent (prices, active states, decorative lines) */
+  --ka-accent:       #8b1a1a;
+  --ka-accent-dark:  #6d1515;
+  --ka-accent-light: rgba(139, 26, 26, 0.09);
+
+  /* Forest green — secondary accent (hover, logo circle, lang buttons) */
+  --ka-green:        #2e7d32;
+  --ka-green-dark:   #1b5e20;
+  --ka-green-light:  rgba(46, 125, 50, 0.09);
+
+  /* Keep legacy names so the feedback-system components don't break */
+  --ka-amber:        #8b1a1a;
+  --ka-amber-dark:   #6d1515;
+  --ka-amber-light:  rgba(139, 26, 26, 0.09);
+  --kabakeh-green:      #2e7d32;
+  --kabakeh-green-dark: #1b5e20;
   --kabakeh-red:        #9b1c1c;
   --kabakeh-red-dark:   #7f1d1d;
   --kabakeh-brown:      #5b2d2d;
@@ -143,13 +153,13 @@ html, body {
   letter-spacing: 0.02em;
 }
 .langBtn:hover {
-  border-color: var(--ka-amber);
-  color: var(--ka-amber);
+  border-color: var(--ka-green);
+  color: var(--ka-green);
 }
 .langBtn[aria-pressed="true"] {
-  border-color: var(--ka-amber);
-  color: var(--ka-amber);
-  background: var(--ka-amber-light);
+  border-color: var(--ka-green);
+  color: var(--ka-green);
+  background: var(--ka-green-light);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -191,12 +201,12 @@ html, body {
   height: 52px;
   border-radius: 50%;
   background: #fff;
-  border: 2px solid var(--ka-border-strong);
+  border: 2px solid var(--ka-green);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(28, 23, 18, 0.10);
+  box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
 }
 
 .menuLogoImg {
