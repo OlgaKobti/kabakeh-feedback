@@ -281,39 +281,7 @@ export default function HomePage() {
         </a>
       </div>
 
-      {/* About */}
-      {aboutText[lang] && (
-        <section className="homeSection">
-          <h2 className="homeSectionTitle">{t.about}</h2>
-          <p className="homeAboutText">{aboutText[lang]}</p>
-        </section>
-      )}
-
-      {/* Opening hours */}
-      {Object.keys(hours).length > 0 && (
-        <section className="homeSection">
-          <h2 className="homeSectionTitle">{t.hours}</h2>
-          <div className="homeHoursGrid">
-            {DAY_ORDER.map((day) => {
-              const d = hours[day];
-              const isToday = day === today;
-              return (
-                <div key={day} className={`homeHoursRow${isToday ? " homeHoursRow--today" : ""}`}>
-                  <span className="homeHoursDay">
-                    {isToday && <span className="homeHoursTodayDot" />}
-                    {DAY_NAMES[lang][day]}
-                  </span>
-                  <span className="homeHoursTime">
-                    {d?.closed ? t.closed : d ? <span dir="ltr">{d.open} – {d.close}</span> : ""}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Events */}
+      {/* Events — high up: time-sensitive, drives bookings */}
       {events.length > 0 && (
         <section className="homeEvents">
           <h2 className="homeEventsTitle">{t.events}</h2>
@@ -351,6 +319,14 @@ export default function HomePage() {
                 </div>              );
             })}
           </div>
+        </section>
+      )}
+
+      {/* About */}
+      {aboutText[lang] && (
+        <section className="homeSection">
+          <h2 className="homeSectionTitle">{t.about}</h2>
+          <p className="homeAboutText">{aboutText[lang]}</p>
         </section>
       )}
 
@@ -417,6 +393,30 @@ export default function HomePage() {
           </form>
         )}
       </section>
+
+      {/* Opening hours */}
+      {Object.keys(hours).length > 0 && (
+        <section className="homeSection">
+          <h2 className="homeSectionTitle">{t.hours}</h2>
+          <div className="homeHoursGrid">
+            {DAY_ORDER.map((day) => {
+              const d = hours[day];
+              const isToday = day === today;
+              return (
+                <div key={day} className={`homeHoursRow${isToday ? " homeHoursRow--today" : ""}`}>
+                  <span className="homeHoursDay">
+                    {isToday && <span className="homeHoursTodayDot" />}
+                    {DAY_NAMES[lang][day]}
+                  </span>
+                  <span className="homeHoursTime">
+                    {d?.closed ? t.closed : d ? <span dir="ltr">{d.open} – {d.close}</span> : ""}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* Contact */}
       <footer className="homeFooter">
