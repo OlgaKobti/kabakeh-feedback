@@ -79,7 +79,7 @@ export default function SettingsAdminClient() {
         about_he: aboutHe,
         about_ar: aboutAr,
         about_en: aboutEn,
-        notification_email: notifEmail || null,
+        notification_email: notifEmail || "",
       }),
     });
 

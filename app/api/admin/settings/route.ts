@@ -30,11 +30,15 @@ export async function PUT(req: Request) {
   const body: Record<string, unknown> = await req.json();
   const supabase = supabaseAdmin();
 
-  const upserts = Object.entries(body).map(([key, value]) => ({
-    key,
-    value,
-    updated_at: new Date().toISOString(),
-  }));
+  // Skip entries with null/undefined values to avoid NOT NULL constraint errors.
+  // Empty strings are stored as "" which is valid.
+  const upserts = Object.entries(body)
+    .filter(([, value]) => value !== null && value !== undefined)
+    .map(([key, value]) => ({
+      key,
+      value,
+      updated_at: new Date().toISOString(),
+    }));
 
   const { error } = await supabase
     .from("site_settings")
