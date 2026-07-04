@@ -252,33 +252,16 @@ export default function HomePage() {
       {/* Hero — full-screen text over the animated background */}
       <div className="homeHero">
         <div className="homeHeroOverlay">
-          <div className="homeHeroTitle">
-            <img src="/logo.jpg" alt="Kabakeh" className="homeHeroLogo" />
-            <div>
-              <h1 className="homeHeroName">Kabakeh</h1>
-              <p className="homeHeroTagline">{t.tagline}</p>
-            </div>
-          </div>
+          <p className="homeHeroTagline">{t.tagline}</p>
+          <h1 className="homeHeroName">Kabakeh</h1>
         </div>
       </div>
 
       {/* CTAs */}
       <div className="homeCtaRow">
-        <a href="https://menu.kabakeh.com" className="homeCta homeCta--primary">
-          <span className="homeCtaEmoji">🍽️</span>
-          <span className="homeCtaLabel">{t.menuBtn}</span>
-          <span className="homeCtaSub">{t.menuSub}</span>
-        </a>
-        <a href="https://ontopo.com/he/il/page/58618784" target="_blank" rel="noreferrer" className="homeCta homeCta--reserve">
-          <span className="homeCtaEmoji">📅</span>
-          <span className="homeCtaLabel">{t.reserveBtn}</span>
-          <span className="homeCtaSub">{t.reserveSub}</span>
-        </a>
-        <a href="https://feedback.kabakeh.com" className="homeCta homeCta--secondary">
-          <span className="homeCtaEmoji">⭐</span>
-          <span className="homeCtaLabel">{t.feedbackBtn}</span>
-          <span className="homeCtaSub">{t.feedbackSub}</span>
-        </a>
+        <a href="https://menu.kabakeh.com" className="homeCta homeCta--primary">{t.menuBtn}</a>
+        <a href="https://ontopo.com/he/il/page/58618784" target="_blank" rel="noreferrer" className="homeCta homeCta--reserve">{t.reserveBtn}</a>
+        <a href="https://feedback.kabakeh.com" className="homeCta homeCta--secondary">{t.feedbackBtn}</a>
       </div>
 
       {/* Events — high up: time-sensitive, drives bookings */}
