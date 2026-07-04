@@ -17,9 +17,17 @@ async function sendEmail(body: {
   message?: string;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
-  const ownerEmail = process.env.OWNER_EMAIL;
+  if (!apiKey) return;
 
-  if (!apiKey || !ownerEmail) return; // gracefully skip if not configured
+  // Prefer notification_email stored in DB; fall back to OWNER_EMAIL env var
+  const { data: setting } = await supabaseAdmin()
+    .from("site_settings")
+    .select("value")
+    .eq("key", "notification_email")
+    .single();
+
+  const ownerEmail = (setting?.value as string) ?? process.env.OWNER_EMAIL;
+  if (!ownerEmail) return;
 
   const { Resend } = await import("resend");
   const resend = new Resend(apiKey);

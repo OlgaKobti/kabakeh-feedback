@@ -44,6 +44,7 @@ export default function SettingsAdminClient() {
   const [aboutHe, setAboutHe] = useState("");
   const [aboutAr, setAboutAr] = useState("");
   const [aboutEn, setAboutEn] = useState("");
+  const [notifEmail, setNotifEmail] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -58,6 +59,7 @@ export default function SettingsAdminClient() {
         if (s.about_he) setAboutHe(s.about_he as string);
         if (s.about_ar) setAboutAr(s.about_ar as string);
         if (s.about_en) setAboutEn(s.about_en as string);
+        if (s.notification_email) setNotifEmail(s.notification_email as string);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -77,6 +79,7 @@ export default function SettingsAdminClient() {
         about_he: aboutHe,
         about_ar: aboutAr,
         about_en: aboutEn,
+        notification_email: notifEmail || null,
       }),
     });
 
@@ -144,6 +147,22 @@ export default function SettingsAdminClient() {
             {error}
           </div>
         )}
+
+        {/* Notification email */}
+        <div style={{ background: "#fff", borderRadius: 14, padding: isMobile ? 16 : 22, border: "1px solid #e5e0d8", marginBottom: 20 }}>
+          <h2 style={sectionTitle}>📧 אימייל להתראות</h2>
+          <p style={{ fontSize: 13, color: "#7c6f64", margin: "0 0 12px" }}>
+            לכתובת זו יישלח אימייל כשמישהו שולח בקשה לאירוע פרטי
+          </p>
+          <input
+            type="email"
+            value={notifEmail}
+            onChange={(e) => setNotifEmail(e.target.value)}
+            placeholder="owner@kabakeh.com"
+            style={inputStyle}
+            dir="ltr"
+          />
+        </div>
 
         {/* Opening hours */}
         <div style={{ background: "#fff", borderRadius: 14, padding: isMobile ? 16 : 22, border: "1px solid #e5e0d8", marginBottom: 20 }}>
