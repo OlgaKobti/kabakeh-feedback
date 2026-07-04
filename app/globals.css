@@ -992,6 +992,19 @@ html, body {
 }
 .homeEventBookBtn:hover { background: var(--ka-accent-dark); }
 
+.homeEventSoldOut {
+  margin-top: 10px;
+  display: inline-block;
+  background: #fee2e2;
+  color: #7f1d1d;
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 /* ─── Booking modal ───────────────────────────────────────────────────────── */
 .bookingOverlay {
   position: fixed;

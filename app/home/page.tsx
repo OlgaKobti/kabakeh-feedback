@@ -13,6 +13,7 @@ type Event = {
   description_he: string | null; description_ar: string | null; description_en: string | null;
   event_date: string; event_time: string | null;
   image_url: string | null;
+  is_sold_out: boolean;
 };
 
 type Photo = {
@@ -35,7 +36,7 @@ const COPY: Record<Lang, {
   eventTypeLabel: string; guestsLabel: string; dateLabel: string; messageLabel: string;
   sendBtn: string; sentMsg: string;
   contact: string; phone: string; location: string; locationHint: string;
-  bookBtn: string; bookTitle: string; phoneLabel: string; bookSend: string; bookSent: string;
+  bookBtn: string; bookTitle: string; phoneLabel: string; bookSend: string; bookSent: string; soldOut: string;
 }> = {
   he: {
     tagline: "מסעדה ערבית אותנטית",
@@ -55,6 +56,7 @@ const COPY: Record<Lang, {
     bookBtn: "הזמן מקום", bookTitle: "הזמנת מקום לאירוע",
     phoneLabel: "מספר טלפון", bookSend: "שליחת בקשה",
     bookSent: "תודה! קיבלנו את בקשתכם. נחזור אליכם בהקדם לאישור ההזמנה.",
+    soldOut: "אזל",
   },
   ar: {
     tagline: "مطعم عربي أصيل",
@@ -74,6 +76,7 @@ const COPY: Record<Lang, {
     bookBtn: "احجز مقعداً", bookTitle: "حجز مقعد للفعالية",
     phoneLabel: "رقم الهاتف", bookSend: "إرسال الطلب",
     bookSent: "شكراً! استلمنا طلبك. سنتواصل معك قريباً لتأكيد الحجز.",
+    soldOut: "نفذت التذاكر",
   },
   en: {
     tagline: "Authentic Arab cuisine",
@@ -93,6 +96,7 @@ const COPY: Record<Lang, {
     bookBtn: "Book a spot", bookTitle: "Book a spot for this event",
     phoneLabel: "Phone number", bookSend: "Send request",
     bookSent: "Thank you! We received your request and will call you back shortly to confirm.",
+    soldOut: "Sold out",
   },
 };
 
@@ -322,9 +326,13 @@ export default function HomePage() {
                       <div className="homeEventTitle">{title}</div>
                       {ev.event_time && <div className="homeEventTime">🕐 {ev.event_time}</div>}
                       {desc && <div className="homeEventDesc">{desc}</div>}
-                      <button type="button" className="homeEventBookBtn" onClick={() => openBooking(ev)}>
-                        {t.bookBtn}
-                      </button>
+                      {ev.is_sold_out ? (
+                        <span className="homeEventSoldOut">{t.soldOut}</span>
+                      ) : (
+                        <button type="button" className="homeEventBookBtn" onClick={() => openBooking(ev)}>
+                          {t.bookBtn}
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>              );

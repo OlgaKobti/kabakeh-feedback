@@ -15,6 +15,7 @@ type AdminEvent = {
   event_time: string;
   image_url: string | null;
   is_published: boolean;
+  is_sold_out: boolean;
 };
 
 type EventForm = Omit<AdminEvent, "id">;
@@ -30,6 +31,7 @@ const EMPTY_FORM: EventForm = {
   event_time: "",
   image_url: null,
   is_published: true,
+  is_sold_out: false,
 };
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
@@ -89,6 +91,7 @@ export default function EventsAdminClient() {
       event_time: ev.event_time ?? "",
       image_url: ev.image_url ?? null,
       is_published: ev.is_published,
+      is_sold_out: ev.is_sold_out,
     });
     setError("");
     setShowModal(true);
@@ -225,6 +228,7 @@ export default function EventsAdminClient() {
                   <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1714" }}>{ev.title_he}</div>
                   {ev.event_time && <div style={{ fontSize: 12, color: "#7c6f64", marginTop: 2 }}>🕐 {ev.event_time}</div>}
                   {!ev.is_published && <span style={{ fontSize: 11, background: "#f3f3f3", color: "#999", borderRadius: 4, padding: "1px 6px", marginTop: 4, display: "inline-block" }}>מוסתר</span>}
+                  {ev.is_sold_out && <span style={{ fontSize: 11, background: "#fee2e2", color: "#7f1d1d", borderRadius: 4, padding: "1px 6px", marginTop: 4, display: "inline-block", marginInlineStart: 4, fontWeight: 700 }}>SOLD OUT</span>}
                 </div>
 
                 {/* Actions */}
@@ -320,6 +324,17 @@ export default function EventsAdminClient() {
               <div style={{ gridColumn: isMobile ? undefined : "1 / -1", display: "flex", alignItems: "center", gap: 10 }}>
                 <input type="checkbox" id="is_published" checked={form.is_published} onChange={(e) => setForm({ ...form, is_published: e.target.checked })} style={{ width: 18, height: 18, cursor: "pointer" }} />
                 <label htmlFor="is_published" style={{ ...labelStyle, marginBottom: 0, cursor: "pointer" }}>פרסם באתר (גלוי למבקרים)</label>
+              </div>
+
+              {/* Sold out toggle */}
+              <div style={{ gridColumn: isMobile ? undefined : "1 / -1", display: "flex", alignItems: "center", gap: 10, background: form.is_sold_out ? "#fee2e2" : "#faf8f4", borderRadius: 8, padding: "10px 14px", border: `1.5px solid ${form.is_sold_out ? "#fca5a5" : "#e5e0d8"}` }}>
+                <input type="checkbox" id="is_sold_out" checked={form.is_sold_out} onChange={(e) => setForm({ ...form, is_sold_out: e.target.checked })} style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#8b1a1a" }} />
+                <div>
+                  <label htmlFor="is_sold_out" style={{ ...labelStyle, marginBottom: 0, cursor: "pointer", color: form.is_sold_out ? "#7f1d1d" : "#1a1714", fontWeight: 700 }}>
+                    🚫 SOLD OUT — אין מקומות פנויים
+                  </label>
+                  <div style={{ fontSize: 12, color: "#7c6f64", marginTop: 2 }}>כשמסומן, כפתור ההזמנה יוסתר מהמבקרים</div>
+                </div>
               </div>
             </div>
 
