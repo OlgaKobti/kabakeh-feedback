@@ -616,7 +616,20 @@ html, body {
   gap: 12px;
 }
 
-/* Override brand + lang colors inside the home top bar (dark bg) */
+/* Override logo circle for home page dark header */
+.homeTop .menuLogoCircle {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  width: 38px;
+  height: 38px;
+}
+.homeTop .menuLogoImg {
+  mix-blend-mode: multiply;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
 .homeTop .menuBrand { color: #fff; }
 .homeTop .langBtn   { color: rgba(255,255,255,0.7); }
 .homeTop .langBtn[aria-pressed="true"],
