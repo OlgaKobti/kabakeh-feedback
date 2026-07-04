@@ -40,8 +40,25 @@ export default function MenuClient({ menu }: { menu: MenuCategory[] }) {
   const rtl = useMemo(() => isRtl(lang), [lang]);
 
   const [q, setQ] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string>("");
 
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
+
+  // track which section is in view for active tab highlight
+  useEffect(() => {
+    const observers: IntersectionObserver[] = [];
+    Object.entries(sectionRefs.current).forEach(([id, el]) => {
+      if (!el) return;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveCategory(id); },
+        { rootMargin: "-30% 0px -60% 0px" }
+      );
+      obs.observe(el);
+      observers.push(obs);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [menu]);
 
   function changeLang(next: Lang) {
     setLang(next);
@@ -72,7 +89,7 @@ export default function MenuClient({ menu }: { menu: MenuCategory[] }) {
   function scrollToCategory(id: string) {
     const el = sectionRefs.current[id];
     if (!el) return;
-    const y = el.getBoundingClientRect().top + window.scrollY - 90;
+    const y = el.getBoundingClientRect().top + window.scrollY - 130;
     window.scrollTo({ top: y, behavior: "smooth" });
   }
 
@@ -126,7 +143,9 @@ export default function MenuClient({ menu }: { menu: MenuCategory[] }) {
       {/* Category tabs */}
       <div className="menuTabs">
         {menu.map((cat) => (
-          <button key={cat.id} type="button" className="menuTab" onClick={() => scrollToCategory(cat.id)}>
+          <button key={cat.id} type="button"
+            className={`menuTab${activeCategory === cat.id ? " active" : ""}`}
+            onClick={() => scrollToCategory(cat.id)}>
             {cat.title[lang]}
           </button>
         ))}
