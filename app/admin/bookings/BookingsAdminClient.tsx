@@ -23,6 +23,17 @@ const STATUS_LABELS: Record<string, { label: string; color: string; bg: string }
   cancelled: { label: "בוטל",   color: "#7f1d1d", bg: "#fee2e2" },
 };
 
+/** Build a wa.me link with a pre-filled message to the customer */
+function waLink(phone: string, message: string): string {
+  const digits = phone.replace(/\D/g, "");
+  const normalised = digits.startsWith("972")
+    ? digits
+    : digits.startsWith("0")
+    ? `972${digits.slice(1)}`
+    : digits;
+  return `https://wa.me/${normalised}?text=${encodeURIComponent(message)}`;
+}
+
 function useIsMobile() {
   const [m, setM] = useState(false);
   useEffect(() => {
@@ -178,6 +189,28 @@ export default function BookingsAdminClient() {
                             ↩ ממתין
                           </button>
                         )}
+
+                        {/* WhatsApp quick-reply button */}
+                        {(() => {
+                          const dateStr = b.event_date
+                            ? new Date(b.event_date + "T12:00:00").toLocaleDateString("he-IL", { day: "numeric", month: "long", year: "numeric" })
+                            : "";
+                          const confirmedMsg =
+                            `שלום ${b.name} 👋\nהזמנתך לאירוע *${b.event_title}*${dateStr ? ` (${dateStr})` : ""} אושרה! 🎉\nנשמח לראותך. לשאלות צרו קשר.\n— קבאכה`;
+                          const cancelledMsg =
+                            `שלום ${b.name},\nלצערנו הזמנתך לאירוע *${b.event_title}*${dateStr ? ` (${dateStr})` : ""} בוטלה.\nלפרטים נוספים צרו קשר.\n— קבאכה`;
+                          const msg = b.status === "confirmed" ? confirmedMsg : b.status === "cancelled" ? cancelledMsg : confirmedMsg;
+                          return (
+                            <a
+                              href={waLink(b.phone, msg)}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{ padding: "5px 12px", borderRadius: 6, border: "1.5px solid #86efac", background: "#f0fff4", color: "#065f46", fontSize: 13, fontWeight: 600, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
+                            >
+                              📲 שלח WhatsApp
+                            </a>
+                          );
+                        })()}
                       </div>
 
                       <div style={{ fontSize: 11, color: "#9ca3af", marginTop: 8 }}>

@@ -36,7 +36,7 @@ const COPY: Record<Lang, {
   eventTypeLabel: string; guestsLabel: string; dateLabel: string; messageLabel: string;
   sendBtn: string; sentMsg: string;
   contact: string; phone: string; location: string; locationHint: string;
-  bookBtn: string; bookTitle: string; phoneLabel: string; bookSend: string; bookSent: string; soldOut: string;
+  bookBtn: string; bookTitle: string; phoneLabel: string; bookSend: string; bookSent: string; soldOut: string; emailLabel: string; emailHint: string;
 }> = {
   he: {
     tagline: "מסעדה ערבית אותנטית",
@@ -57,6 +57,7 @@ const COPY: Record<Lang, {
     phoneLabel: "מספר טלפון", bookSend: "שליחת בקשה",
     bookSent: "תודה! קיבלנו את בקשתכם. נחזור אליכם בהקדם לאישור ההזמנה.",
     soldOut: "אזל",
+    emailLabel: "אימייל (אופציונלי)", emailHint: "לקבלת אישור בדוא\"ל",
   },
   ar: {
     tagline: "مطعم عربي أصيل",
@@ -77,6 +78,7 @@ const COPY: Record<Lang, {
     phoneLabel: "رقم الهاتف", bookSend: "إرسال الطلب",
     bookSent: "شكراً! استلمنا طلبك. سنتواصل معك قريباً لتأكيد الحجز.",
     soldOut: "نفذت التذاكر",
+    emailLabel: "البريد الإلكتروني (اختياري)", emailHint: "لاستلام تأكيد الحجز",
   },
   en: {
     tagline: "Authentic Arab cuisine",
@@ -97,6 +99,7 @@ const COPY: Record<Lang, {
     phoneLabel: "Phone number", bookSend: "Send request",
     bookSent: "Thank you! We received your request and will call you back shortly to confirm.",
     soldOut: "Sold out",
+    emailLabel: "Email (optional)", emailHint: "To receive a confirmation email",
   },
 };
 
@@ -131,7 +134,7 @@ export default function HomePage() {
 
   // Booking modal state
   const [bookingEvent, setBookingEvent] = useState<Event | null>(null);
-  const [bookForm, setBookForm] = useState({ name: "", phone: "", guests_count: "", message: "" });
+  const [bookForm, setBookForm] = useState({ name: "", phone: "", email: "", guests_count: "", message: "" });
   const [bookSending, setBookSending] = useState(false);
   const [bookSent, setBookSent] = useState(false);
   const [bookError, setBookError] = useState("");
@@ -191,6 +194,7 @@ export default function HomePage() {
         event_date: bookingEvent.event_date,
         name: bookForm.name,
         phone: bookForm.phone,
+        email: bookForm.email || null,
         guests_count: bookForm.guests_count || null,
         message: bookForm.message || null,
       }),
@@ -202,7 +206,7 @@ export default function HomePage() {
 
   function openBooking(ev: Event) {
     setBookingEvent(ev);
-    setBookForm({ name: "", phone: "", guests_count: "", message: "" });
+    setBookForm({ name: "", phone: "", email: "", guests_count: "", message: "" });
     setBookSent(false);
     setBookError("");
   }
@@ -455,6 +459,8 @@ export default function HomePage() {
                     <input style={inputStyle} value={bookForm.name} required onChange={(e) => setBookForm((f) => ({ ...f, name: e.target.value }))} />
                     <label className="bookingLabel">{t.phoneLabel} *</label>
                     <input style={inputStyle} type="tel" value={bookForm.phone} required onChange={(e) => setBookForm((f) => ({ ...f, phone: e.target.value }))} />
+                    <label className="bookingLabel">{t.emailLabel}</label>
+                    <input style={inputStyle} type="email" placeholder={t.emailHint} value={bookForm.email} onChange={(e) => setBookForm((f) => ({ ...f, email: e.target.value }))} />
                     <label className="bookingLabel">{t.guestsLabel}</label>
                     <input style={inputStyle} type="number" min="1" value={bookForm.guests_count} onChange={(e) => setBookForm((f) => ({ ...f, guests_count: e.target.value }))} />
                     <label className="bookingLabel">{t.messageLabel}</label>

@@ -95,6 +95,7 @@ export async function POST(req: Request) {
     event_date: body.event_date ?? null,
     name: body.name.trim(),
     phone: body.phone.trim(),
+    email: body.email?.trim() || null,
     guests_count: body.guests_count ?? null,
     message: body.message ?? null,
   };
