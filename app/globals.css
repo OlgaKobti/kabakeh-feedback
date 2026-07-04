@@ -787,13 +787,31 @@ html, body {
 
 .homeEventCard {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  flex-direction: column;
   background: #fff;
   border: 1px solid var(--ka-border);
   border-radius: 12px;
-  padding: 14px 16px;
+  overflow: hidden;
   box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+}
+
+.homeEventImg {
+  width: 100%;
+  height: 160px;
+  overflow: hidden;
+}
+.homeEventImg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.homeEventCardInner {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 14px 16px;
 }
 
 .homeEventDate {

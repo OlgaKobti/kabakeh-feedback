@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AdminShell } from "../components/AdminShell";
 
-type Event = {
+type AdminEvent = {
   id: string;
   title_he: string;
   title_ar: string;
@@ -13,12 +13,13 @@ type Event = {
   description_en: string;
   event_date: string;
   event_time: string;
+  image_url: string | null;
   is_published: boolean;
 };
 
-type FormData = Omit<Event, "id">;
+type EventForm = Omit<AdminEvent, "id">;
 
-const EMPTY_FORM: FormData = {
+const EMPTY_FORM: EventForm = {
   title_he: "",
   title_ar: "",
   title_en: "",
@@ -27,8 +28,11 @@ const EMPTY_FORM: FormData = {
   description_en: "",
   event_date: "",
   event_time: "",
+  image_url: null,
   is_published: true,
 };
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 
 function useIsMobile() {
   const [mobile, setMobile] = useState(false);
@@ -41,20 +45,16 @@ function useIsMobile() {
   return mobile;
 }
 
-function formatDateDisplay(dateStr: string) {
-  if (!dateStr) return "";
-  const d = new Date(dateStr + "T12:00:00");
-  return d.toLocaleDateString("he-IL", { day: "numeric", month: "long", year: "numeric" });
-}
-
 export default function EventsAdminClient() {
   const isMobile = useIsMobile();
-  const [events, setEvents] = useState<Event[]>([]);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [events, setEvents] = useState<AdminEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<FormData>(EMPTY_FORM);
+  const [form, setForm] = useState<EventForm>(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
 
   async function loadEvents() {
@@ -76,7 +76,7 @@ export default function EventsAdminClient() {
     setShowModal(true);
   }
 
-  function openEdit(ev: Event) {
+  function openEdit(ev: AdminEvent) {
     setEditingId(ev.id);
     setForm({
       title_he: ev.title_he,
@@ -87,6 +87,7 @@ export default function EventsAdminClient() {
       description_en: ev.description_en ?? "",
       event_date: ev.event_date,
       event_time: ev.event_time ?? "",
+      image_url: ev.image_url ?? null,
       is_published: ev.is_published,
     });
     setError("");
@@ -98,6 +99,25 @@ export default function EventsAdminClient() {
     setEditingId(null);
     setForm(EMPTY_FORM);
     setError("");
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch("/api/admin/events/upload", { method: "POST", body: fd });
+    if (res.ok) {
+      const { filename } = await res.json();
+      const url = `${SUPABASE_URL}/storage/v1/object/public/gallery/${filename}`;
+      setForm((prev) => ({ ...prev, image_url: url }));
+    } else {
+      const d = await res.json();
+      setError(d.error ?? "שגיאה בהעלאת תמונה");
+    }
+    setUploading(false);
+    if (fileRef.current) fileRef.current.value = "";
   }
 
   async function handleSave() {
@@ -142,7 +162,7 @@ export default function EventsAdminClient() {
     await loadEvents();
   }
 
-  async function togglePublish(ev: Event) {
+  async function togglePublish(ev: AdminEvent) {
     await fetch(`/api/admin/events/${ev.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -152,25 +172,13 @@ export default function EventsAdminClient() {
   }
 
   const inputStyle: React.CSSProperties = {
-    width: "100%",
-    padding: "9px 12px",
-    borderRadius: 8,
-    border: "1.5px solid #e5e0d8",
-    fontSize: 14,
-    fontFamily: "inherit",
-    background: "#faf8f4",
-    color: "#1a1714",
-    boxSizing: "border-box",
+    width: "100%", padding: "9px 12px", borderRadius: 8, border: "1.5px solid #e5e0d8",
+    fontSize: 14, fontFamily: "inherit", background: "#faf8f4", color: "#1a1714", boxSizing: "border-box",
   };
 
   const labelStyle: React.CSSProperties = {
-    display: "block",
-    fontSize: 12,
-    fontWeight: 700,
-    color: "#7c6f64",
-    marginBottom: 5,
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
+    display: "block", fontSize: 12, fontWeight: 700, color: "#7c6f64", marginBottom: 5,
+    textTransform: "uppercase", letterSpacing: "0.05em",
   };
 
   return (
@@ -179,26 +187,10 @@ export default function EventsAdminClient() {
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
           <div>
-            <h1 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 800, color: "#1a1714", margin: 0 }}>
-              🗓️ ניהול אירועים
-            </h1>
-            <p style={{ color: "#7c6f64", fontSize: 13, margin: "4px 0 0" }}>
-              אירועים מפורסמים יופיעו בדף הבית של האתר
-            </p>
+            <h1 style={{ fontSize: isMobile ? 20 : 24, fontWeight: 800, color: "#1a1714", margin: 0 }}>🗓️ ניהול אירועים</h1>
+            <p style={{ color: "#7c6f64", fontSize: 13, margin: "4px 0 0" }}>אירועים מפורסמים יופיעו בדף הבית של האתר</p>
           </div>
-          <button
-            onClick={openNew}
-            style={{
-              background: "#8b1a1a",
-              color: "#fff",
-              border: "none",
-              borderRadius: 8,
-              padding: "10px 18px",
-              fontSize: 14,
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
+          <button onClick={openNew} style={{ background: "#8b1a1a", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontSize: 14, fontWeight: 700, cursor: "pointer" }}>
             + אירוע חדש
           </button>
         </div>
@@ -214,93 +206,36 @@ export default function EventsAdminClient() {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {events.map((ev) => (
-              <div
-                key={ev.id}
-                style={{
-                  background: "#fff",
-                  border: "1px solid #e5e0d8",
-                  borderRadius: 12,
-                  padding: "14px 16px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 14,
-                  opacity: ev.is_published ? 1 : 0.55,
-                }}
-              >
+              <div key={ev.id} style={{ background: "#fff", border: "1px solid #e5e0d8", borderRadius: 12, padding: "14px 16px", display: "flex", alignItems: "center", gap: 14, opacity: ev.is_published ? 1 : 0.55 }}>
                 {/* Date badge */}
-                <div style={{
-                  background: "#8b1a1a",
-                  color: "#fff",
-                  borderRadius: 8,
-                  minWidth: 52,
-                  padding: "8px 6px",
-                  textAlign: "center",
-                  flexShrink: 0,
-                }}>
-                  <div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1 }}>
-                    {new Date(ev.event_date + "T12:00:00").getDate()}
-                  </div>
+                <div style={{ background: "#8b1a1a", color: "#fff", borderRadius: 8, minWidth: 52, padding: "8px 6px", textAlign: "center", flexShrink: 0 }}>
+                  <div style={{ fontSize: 22, fontWeight: 800, lineHeight: 1 }}>{new Date(ev.event_date + "T12:00:00").getDate()}</div>
                   <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", marginTop: 2 }}>
                     {new Date(ev.event_date + "T12:00:00").toLocaleDateString("he-IL", { month: "short" })}
                   </div>
                 </div>
 
+                {/* Thumbnail */}
+                {ev.image_url && (
+                  <img src={ev.image_url} alt="" style={{ width: 52, height: 52, borderRadius: 8, objectFit: "cover", flexShrink: 0 }} />
+                )}
+
                 {/* Info */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1714" }}>{ev.title_he}</div>
-                  {ev.event_time && (
-                    <div style={{ fontSize: 12, color: "#7c6f64", marginTop: 2 }}>🕐 {ev.event_time}</div>
-                  )}
-                  {!ev.is_published && (
-                    <span style={{ fontSize: 11, background: "#f3f3f3", color: "#999", borderRadius: 4, padding: "1px 6px", marginTop: 4, display: "inline-block" }}>
-                      מוסתר
-                    </span>
-                  )}
+                  {ev.event_time && <div style={{ fontSize: 12, color: "#7c6f64", marginTop: 2 }}>🕐 {ev.event_time}</div>}
+                  {!ev.is_published && <span style={{ fontSize: 11, background: "#f3f3f3", color: "#999", borderRadius: 4, padding: "1px 6px", marginTop: 4, display: "inline-block" }}>מוסתר</span>}
                 </div>
 
                 {/* Actions */}
                 <div style={{ display: "flex", gap: 8, flexShrink: 0, flexWrap: isMobile ? "wrap" : "nowrap" }}>
-                  <button
-                    onClick={() => togglePublish(ev)}
-                    title={ev.is_published ? "הסתר" : "פרסם"}
-                    style={{
-                      padding: "6px 10px",
-                      borderRadius: 6,
-                      border: "1.5px solid #e5e0d8",
-                      background: "#faf8f4",
-                      cursor: "pointer",
-                      fontSize: 14,
-                    }}
-                  >
+                  <button onClick={() => togglePublish(ev)} title={ev.is_published ? "הסתר" : "פרסם"} style={{ padding: "6px 10px", borderRadius: 6, border: "1.5px solid #e5e0d8", background: "#faf8f4", cursor: "pointer", fontSize: 14 }}>
                     {ev.is_published ? "👁️" : "🙈"}
                   </button>
-                  <button
-                    onClick={() => openEdit(ev)}
-                    style={{
-                      padding: "6px 12px",
-                      borderRadius: 6,
-                      border: "1.5px solid #e5e0d8",
-                      background: "#faf8f4",
-                      cursor: "pointer",
-                      fontSize: 13,
-                      fontWeight: 600,
-                    }}
-                  >
+                  <button onClick={() => openEdit(ev)} style={{ padding: "6px 12px", borderRadius: 6, border: "1.5px solid #e5e0d8", background: "#faf8f4", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
                     ✏️ עריכה
                   </button>
-                  <button
-                    onClick={() => handleDelete(ev.id)}
-                    style={{
-                      padding: "6px 12px",
-                      borderRadius: 6,
-                      border: "1.5px solid #fecaca",
-                      background: "#fff5f5",
-                      color: "#c0392b",
-                      cursor: "pointer",
-                      fontSize: 13,
-                      fontWeight: 600,
-                    }}
-                  >
+                  <button onClick={() => handleDelete(ev.id)} style={{ padding: "6px 12px", borderRadius: 6, border: "1.5px solid #fecaca", background: "#fff5f5", color: "#c0392b", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
                     🗑️
                   </button>
                 </div>
@@ -313,37 +248,16 @@ export default function EventsAdminClient() {
       {/* Modal */}
       {showModal && (
         <div
-          style={{
-            position: "fixed", inset: 0, zIndex: 999,
-            background: "rgba(0,0,0,0.45)",
-            display: "flex",
-            alignItems: isMobile ? "flex-end" : "center",
-            justifyContent: "center",
-            padding: isMobile ? 0 : 20,
-          }}
+          style={{ position: "fixed", inset: 0, zIndex: 999, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: isMobile ? "flex-end" : "center", justifyContent: "center", padding: isMobile ? 0 : 20 }}
           onClick={(e) => { if (e.target === e.currentTarget) closeModal(); }}
         >
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: isMobile ? "16px 16px 0 0" : 16,
-              padding: isMobile ? "20px 16px 28px" : "28px 28px 24px",
-              width: "100%",
-              maxWidth: isMobile ? undefined : 520,
-              maxHeight: isMobile ? "92vh" : "90vh",
-              overflowY: "auto",
-              direction: "rtl",
-            }}
-          >
+          <div style={{ background: "#fff", borderRadius: isMobile ? "16px 16px 0 0" : 16, padding: isMobile ? "20px 16px 28px" : "28px 28px 24px", width: "100%", maxWidth: isMobile ? undefined : 520, maxHeight: isMobile ? "92vh" : "90vh", overflowY: "auto", direction: "rtl" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-              <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: "#1a1714" }}>
-                {editingId ? "עריכת אירוע" : "אירוע חדש"}
-              </h2>
+              <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, color: "#1a1714" }}>{editingId ? "עריכת אירוע" : "אירוע חדש"}</h2>
               <button onClick={closeModal} style={{ background: "none", border: "none", fontSize: 22, cursor: "pointer", color: "#999", lineHeight: 1 }}>×</button>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 14 }}>
-              {/* Date & time */}
               <div>
                 <label style={labelStyle}>תאריך *</label>
                 <input type="date" value={form.event_date} onChange={(e) => setForm({ ...form, event_date: e.target.value })} style={inputStyle} />
@@ -353,7 +267,6 @@ export default function EventsAdminClient() {
                 <input type="time" value={form.event_time} onChange={(e) => setForm({ ...form, event_time: e.target.value })} style={inputStyle} />
               </div>
 
-              {/* Titles */}
               <div style={{ gridColumn: isMobile ? undefined : "1 / -1" }}>
                 <label style={labelStyle}>כותרת בעברית *</label>
                 <input value={form.title_he} onChange={(e) => setForm({ ...form, title_he: e.target.value })} placeholder="ערב מוזיקה חיה" style={inputStyle} />
@@ -367,10 +280,9 @@ export default function EventsAdminClient() {
                 <input value={form.title_en} onChange={(e) => setForm({ ...form, title_en: e.target.value })} placeholder="Live music night" style={{ ...inputStyle, direction: "ltr" }} />
               </div>
 
-              {/* Descriptions */}
               <div style={{ gridColumn: isMobile ? undefined : "1 / -1" }}>
                 <label style={labelStyle}>תיאור בעברית</label>
-                <textarea value={form.description_he} onChange={(e) => setForm({ ...form, description_he: e.target.value })} rows={2} placeholder="תיאור קצר של האירוע..." style={{ ...inputStyle, resize: "vertical" }} />
+                <textarea value={form.description_he} onChange={(e) => setForm({ ...form, description_he: e.target.value })} rows={2} placeholder="תיאור קצר..." style={{ ...inputStyle, resize: "vertical" }} />
               </div>
               <div>
                 <label style={labelStyle}>תיאור בערבית</label>
@@ -381,55 +293,43 @@ export default function EventsAdminClient() {
                 <textarea value={form.description_en} onChange={(e) => setForm({ ...form, description_en: e.target.value })} rows={2} style={{ ...inputStyle, resize: "vertical", direction: "ltr" }} />
               </div>
 
+              {/* Image upload */}
+              <div style={{ gridColumn: isMobile ? undefined : "1 / -1" }}>
+                <label style={labelStyle}>תמונה לאירוע (אופציונלי)</label>
+                <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleImageUpload} />
+                {form.image_url ? (
+                  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                    <img src={form.image_url} alt="" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 8, border: "1.5px solid #e5e0d8" }} />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                      <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} style={{ padding: "7px 14px", borderRadius: 8, border: "1.5px solid #e5e0d8", background: "#faf8f4", fontSize: 13, cursor: "pointer", fontWeight: 600 }}>
+                        {uploading ? "מעלה..." : "החלף תמונה"}
+                      </button>
+                      <button type="button" onClick={() => setForm((p) => ({ ...p, image_url: null }))} style={{ padding: "7px 14px", borderRadius: 8, border: "1.5px solid #fecaca", background: "#fff5f5", color: "#c0392b", fontSize: 13, cursor: "pointer" }}>
+                        הסר תמונה
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => fileRef.current?.click()} disabled={uploading} style={{ ...inputStyle, background: "#faf8f4", cursor: "pointer", textAlign: "center", color: "#7c6f64", fontWeight: 600, border: "1.5px dashed #c8bfb5" }}>
+                    {uploading ? "מעלה תמונה..." : "📷 לחצו להעלאת תמונה"}
+                  </button>
+                )}
+              </div>
+
               {/* Published toggle */}
               <div style={{ gridColumn: isMobile ? undefined : "1 / -1", display: "flex", alignItems: "center", gap: 10 }}>
-                <input
-                  type="checkbox"
-                  id="is_published"
-                  checked={form.is_published}
-                  onChange={(e) => setForm({ ...form, is_published: e.target.checked })}
-                  style={{ width: 18, height: 18, cursor: "pointer" }}
-                />
-                <label htmlFor="is_published" style={{ ...labelStyle, marginBottom: 0, cursor: "pointer" }}>
-                  פרסם באתר (גלוי למבקרים)
-                </label>
+                <input type="checkbox" id="is_published" checked={form.is_published} onChange={(e) => setForm({ ...form, is_published: e.target.checked })} style={{ width: 18, height: 18, cursor: "pointer" }} />
+                <label htmlFor="is_published" style={{ ...labelStyle, marginBottom: 0, cursor: "pointer" }}>פרסם באתר (גלוי למבקרים)</label>
               </div>
             </div>
 
             {error && (
-              <div style={{ background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 8, padding: "8px 12px", color: "#c0392b", fontSize: 13, marginTop: 16 }}>
-                {error}
-              </div>
+              <div style={{ background: "#fff5f5", border: "1px solid #fecaca", borderRadius: 8, padding: "8px 12px", color: "#c0392b", fontSize: 13, marginTop: 16 }}>{error}</div>
             )}
 
             <div style={{ display: "flex", gap: 10, marginTop: 20, justifyContent: "flex-end" }}>
-              <button
-                onClick={closeModal}
-                style={{
-                  padding: "10px 18px",
-                  borderRadius: 8,
-                  border: "1.5px solid #e5e0d8",
-                  background: "#faf8f4",
-                  fontSize: 14,
-                  cursor: "pointer",
-                }}
-              >
-                ביטול
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                style={{
-                  padding: "10px 22px",
-                  borderRadius: 8,
-                  border: "none",
-                  background: saving ? "#ccc" : "#8b1a1a",
-                  color: "#fff",
-                  fontSize: 14,
-                  fontWeight: 700,
-                  cursor: saving ? "not-allowed" : "pointer",
-                }}
-              >
+              <button onClick={closeModal} style={{ padding: "10px 18px", borderRadius: 8, border: "1.5px solid #e5e0d8", background: "#faf8f4", fontSize: 14, cursor: "pointer" }}>ביטול</button>
+              <button onClick={handleSave} disabled={saving} style={{ padding: "10px 22px", borderRadius: 8, border: "none", background: saving ? "#ccc" : "#8b1a1a", color: "#fff", fontSize: 14, fontWeight: 700, cursor: saving ? "not-allowed" : "pointer" }}>
                 {saving ? "שומר..." : editingId ? "עדכן" : "הוסף אירוע"}
               </button>
             </div>

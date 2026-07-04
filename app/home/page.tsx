@@ -12,6 +12,7 @@ type Event = {
   title_he: string; title_ar: string; title_en: string;
   description_he: string | null; description_ar: string | null; description_en: string | null;
   event_date: string; event_time: string | null;
+  image_url: string | null;
 };
 
 type Photo = {
@@ -242,19 +243,25 @@ export default function HomePage() {
               const desc = ev[`description_${lang}` as keyof Event] as string | null;
               return (
                 <div key={ev.id} className="homeEventCard">
-                  <div className="homeEventDate">
-                    <span className="homeEventDateDay">{new Date(ev.event_date + "T12:00:00").getDate()}</span>
-                    <span className="homeEventDateMonth">
-                      {new Date(ev.event_date + "T12:00:00").toLocaleDateString(lang === "he" ? "he-IL" : lang === "ar" ? "ar-SA" : "en-GB", { month: "short" })}
-                    </span>
+                  {ev.image_url && (
+                    <div className="homeEventImg">
+                      <img src={ev.image_url} alt={title} loading="lazy" />
+                    </div>
+                  )}
+                  <div className="homeEventCardInner">
+                    <div className="homeEventDate">
+                      <span className="homeEventDateDay">{new Date(ev.event_date + "T12:00:00").getDate()}</span>
+                      <span className="homeEventDateMonth">
+                        {new Date(ev.event_date + "T12:00:00").toLocaleDateString(lang === "he" ? "he-IL" : lang === "ar" ? "ar-SA" : "en-GB", { month: "short" })}
+                      </span>
+                    </div>
+                    <div className="homeEventBody">
+                      <div className="homeEventTitle">{title}</div>
+                      {ev.event_time && <div className="homeEventTime">🕐 {ev.event_time}</div>}
+                      {desc && <div className="homeEventDesc">{desc}</div>}
+                    </div>
                   </div>
-                  <div className="homeEventBody">
-                    <div className="homeEventTitle">{title}</div>
-                    {ev.event_time && <div className="homeEventTime">🕐 {ev.event_time}</div>}
-                    {desc && <div className="homeEventDesc">{desc}</div>}
-                  </div>
-                </div>
-              );
+                </div>              );
             })}
           </div>
         </section>
