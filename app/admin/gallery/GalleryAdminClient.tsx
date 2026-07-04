@@ -150,11 +150,6 @@ export default function GalleryAdminClient() {
           </div>
         )}
 
-        {/* Note about bucket */}
-        <div style={{ background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#92400e", marginBottom: 20 }}>
-          💡 לפני העלאת תמונה ראשונה: צרו bucket בשם <strong>gallery</strong> ב-Supabase Storage (Public).
-        </div>
-
         {/* Grid */}
         {loading ? (
           <p style={{ textAlign: "center", color: "#7c6f64", padding: 40 }}>טוען...</p>
