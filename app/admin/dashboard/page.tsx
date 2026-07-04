@@ -7,13 +7,14 @@ import DashboardClient from "./DashboardClient";
 async function getStats() {
   try {
     const supabase = supabaseAdmin();
-    const [{ count: feedbackCount }, { count: itemCount }] = await Promise.all([
+    const [{ count: feedbackCount }, { count: itemCount }, { count: eventCount }] = await Promise.all([
       supabase.from("feedback").select("id", { count: "exact", head: true }),
       supabase.from("menu_items").select("id", { count: "exact", head: true }),
+      supabase.from("events").select("id", { count: "exact", head: true }),
     ]);
-    return { feedbackCount: feedbackCount ?? 0, itemCount: itemCount ?? 0 };
+    return { feedbackCount: feedbackCount ?? 0, itemCount: itemCount ?? 0, eventCount: eventCount ?? 0 };
   } catch {
-    return { feedbackCount: 0, itemCount: 0 };
+    return { feedbackCount: 0, itemCount: 0, eventCount: 0 };
   }
 }
 

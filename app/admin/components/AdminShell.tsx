@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-type Section = "dashboard" | "feedback" | "menu";
+type Section = "dashboard" | "feedback" | "menu" | "events";
 
 const navLinks: { id: Section; label: string; href: string; emoji: string }[] = [
   { id: "feedback", label: "Feedback", href: "/admin/feedback", emoji: "💬" },
   { id: "menu", label: "Menu", href: "/admin/menu", emoji: "🍽" },
+  { id: "events", label: "Events", href: "/admin/events", emoji: "🗓️" },
 ];
 
 function useIsMobile(breakpoint = 640) {

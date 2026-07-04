@@ -5,6 +5,18 @@ import { detectLang, isRtl } from "@/lib/i18n";
 
 type Lang = "he" | "ar" | "en";
 
+type Event = {
+  id: string;
+  title_he: string;
+  title_ar: string;
+  title_en: string;
+  description_he: string | null;
+  description_ar: string | null;
+  description_en: string | null;
+  event_date: string;
+  event_time: string | null;
+};
+
 const COPY: Record<
   Lang,
   {
@@ -13,6 +25,7 @@ const COPY: Record<
     menuSub: string;
     feedbackBtn: string;
     feedbackSub: string;
+    events: string;
     contact: string;
     phone: string;
     location: string;
@@ -25,6 +38,7 @@ const COPY: Record<
     menuSub: "צפו במנות ומשקאות",
     feedbackBtn: "השאירו פידבק",
     feedbackSub: "ספרו לנו איך היה",
+    events: "אירועים קרובים",
     contact: "צרו קשר",
     phone: "טלפון",
     location: "מיקום",
@@ -36,6 +50,7 @@ const COPY: Record<
     menuSub: "تصفح الأطباق والمشروبات",
     feedbackBtn: "اترك تقييم",
     feedbackSub: "أخبرنا كيف كانت تجربتك",
+    events: "الفعاليات القادمة",
     contact: "تواصل معنا",
     phone: "هاتف",
     location: "الموقع",
@@ -47,6 +62,7 @@ const COPY: Record<
     menuSub: "Browse dishes and drinks",
     feedbackBtn: "Leave feedback",
     feedbackSub: "Tell us how it was",
+    events: "Upcoming events",
     contact: "Contact us",
     phone: "Phone",
     location: "Location",
@@ -60,12 +76,26 @@ function langLabel(l: Lang) {
   return "العربية";
 }
 
+function formatDate(dateStr: string, lang: Lang) {
+  const date = new Date(dateStr + "T12:00:00");
+  const locale = lang === "he" ? "he-IL" : lang === "ar" ? "ar-SA" : "en-GB";
+  return date.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" });
+}
+
 export default function HomePage() {
   const [lang, setLang] = useState<Lang>("he");
+  const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
     const initial = detectLang() as Lang;
     if (initial === "en" || initial === "he" || initial === "ar") setLang(initial);
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/events")
+      .then((r) => r.json())
+      .then((d) => setEvents(d.events ?? []))
+      .catch(() => {});
   }, []);
 
   const rtl = isRtl(lang);
@@ -126,6 +156,41 @@ export default function HomePage() {
         </a>
       </div>
 
+      {/* Events */}
+      {events.length > 0 && (
+        <section className="homeEvents">
+          <h2 className="homeEventsTitle">{t.events}</h2>
+          <div className="homeEventsList">
+            {events.map((ev) => {
+              const title = ev[`title_${lang}`] || ev.title_he;
+              const desc = ev[`description_${lang}` as keyof Event] as string | null;
+              return (
+                <div key={ev.id} className="homeEventCard">
+                  <div className="homeEventDate">
+                    <span className="homeEventDateDay">
+                      {new Date(ev.event_date + "T12:00:00").getDate()}
+                    </span>
+                    <span className="homeEventDateMonth">
+                      {new Date(ev.event_date + "T12:00:00").toLocaleDateString(
+                        lang === "he" ? "he-IL" : lang === "ar" ? "ar-SA" : "en-GB",
+                        { month: "short" }
+                      )}
+                    </span>
+                  </div>
+                  <div className="homeEventBody">
+                    <div className="homeEventTitle">{title}</div>
+                    {ev.event_time && (
+                      <div className="homeEventTime">🕐 {ev.event_time}</div>
+                    )}
+                    {desc && <div className="homeEventDesc">{desc}</div>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
       {/* Contact */}
       <footer className="homeFooter">
         <div className="homeFooterTitle">{t.contact}</div>
@@ -135,11 +200,7 @@ export default function HomePage() {
             <div className="homeFooterHint">03-688-8843</div>
           </div>
           <div className="homeFooterItem">
-            <a
-              href="https://share.google/W3EPb92inEZdMSJT6"
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href="https://share.google/W3EPb92inEZdMSJT6" target="_blank" rel="noreferrer">
               {t.location}
             </a>
             <div className="homeFooterHint">{t.locationHint}</div>

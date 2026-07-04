@@ -750,3 +750,96 @@ html, body {
   font-size: 13px;
   color: var(--ka-muted);
 }
+
+/* ─── Events section ──────────────────────────────────────────────────── */
+.homeEvents {
+  padding: 24px 16px 8px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.homeEventsTitle {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ka-text);
+  margin: 0 0 18px;
+  text-align: center;
+  letter-spacing: 0.02em;
+  position: relative;
+  padding-bottom: 12px;
+}
+.homeEventsTitle::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  background: var(--ka-accent);
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+.homeEventsList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.homeEventCard {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid var(--ka-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+}
+
+.homeEventDate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--ka-accent);
+  color: #fff;
+  border-radius: 8px;
+  min-width: 52px;
+  padding: 8px 6px;
+  flex-shrink: 0;
+}
+.homeEventDateDay {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1;
+}
+.homeEventDateMonth {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+.homeEventBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.homeEventTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ka-text);
+  margin-bottom: 4px;
+}
+
+.homeEventTime {
+  font-size: 13px;
+  color: var(--ka-muted);
+  margin-bottom: 4px;
+}
+
+.homeEventDesc {
+  font-size: 14px;
+  color: var(--ka-muted);
+  line-height: 1.5;
+}
