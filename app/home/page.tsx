@@ -295,7 +295,7 @@ export default function HomePage() {
                     {DAY_NAMES[lang][day]}
                   </span>
                   <span className="homeHoursTime">
-                    {d?.closed ? t.closed : d ? `${d.open} – ${d.close}` : ""}
+                    {d?.closed ? t.closed : d ? <span dir="ltr">{d.open} – {d.close}</span> : ""}
                   </span>
                 </div>
               );
