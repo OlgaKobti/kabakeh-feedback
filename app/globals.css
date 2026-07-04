@@ -843,3 +843,206 @@ html, body {
   color: var(--ka-muted);
   line-height: 1.5;
 }
+
+/* ─── Generic section wrapper ─────────────────────────────────────────────── */
+.homeSection {
+  padding: 24px 16px 8px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.homeSectionTitle {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ka-text);
+  margin: 0 0 18px;
+  text-align: center;
+  letter-spacing: 0.02em;
+  position: relative;
+  padding-bottom: 12px;
+}
+.homeSectionTitle::after {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 3px;
+  background: var(--ka-accent);
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+/* ─── About text ──────────────────────────────────────────────────────────── */
+.homeAboutText {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--ka-muted);
+  text-align: center;
+  margin: 0;
+}
+
+/* ─── Opening hours ───────────────────────────────────────────────────────── */
+.homeHoursGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid var(--ka-border);
+  border-radius: 14px;
+  padding: 8px 4px;
+  overflow: hidden;
+}
+
+.homeHoursRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  color: var(--ka-text);
+  gap: 8px;
+}
+
+.homeHoursRow--today {
+  background: var(--ka-accent);
+  color: #fff;
+}
+.homeHoursRow--today .homeHoursTime {
+  color: rgba(255,255,255,0.9);
+}
+
+.homeHoursDay {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.homeHoursTodayDot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: #fff;
+  border-radius: 50%;
+}
+
+.homeHoursTime {
+  color: var(--ka-muted);
+  font-size: 14px;
+}
+
+/* ─── Gallery ─────────────────────────────────────────────────────────────── */
+.homeGalleryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 480px) {
+  .homeGalleryGrid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.homeGalleryItem {
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--ka-border);
+  position: relative;
+}
+
+.homeGalleryItem img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.homeGalleryItem:hover img {
+  transform: scale(1.04);
+}
+
+.homeGalleryCaption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(0,0,0,0.55));
+  color: #fff;
+  font-size: 12px;
+  padding: 20px 8px 7px;
+  text-align: center;
+}
+
+/* ─── Private events inquiry form ─────────────────────────────────────────── */
+.homeInquiry {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--ka-border);
+  padding: 24px 20px;
+  max-width: 700px;
+  margin: 16px auto 8px;
+}
+
+.homeInquiryGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 520px) {
+  .homeInquiryGrid { grid-template-columns: 1fr 1fr; }
+}
+
+.homeInquiryLabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ka-muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.homeInquiryHint {
+  font-size: 12px;
+  color: var(--ka-muted);
+  margin-top: 4px;
+}
+
+.homeInquiryBtn {
+  margin-top: 18px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: var(--ka-accent);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  font-family: inherit;
+}
+.homeInquiryBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+.homeInquiryBtn:hover:not(:disabled) { opacity: 0.88; }
+
+.homeInquirySent {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 20px;
+  color: #166534;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.homeInquiryError {
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #c0392b;
+  font-size: 14px;
+  margin-top: 12px;
+}

@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-type Section = "dashboard" | "feedback" | "menu" | "events";
+type Section = "dashboard" | "feedback" | "menu" | "events" | "gallery" | "inquiries" | "settings";
 
 const navLinks: { id: Section; label: string; href: string; emoji: string }[] = [
-  { id: "feedback", label: "Feedback", href: "/admin/feedback", emoji: "💬" },
-  { id: "menu", label: "Menu", href: "/admin/menu", emoji: "🍽" },
-  { id: "events", label: "Events", href: "/admin/events", emoji: "🗓️" },
+  { id: "feedback",  label: "Feedback",  href: "/admin/feedback",  emoji: "💬" },
+  { id: "menu",      label: "Menu",      href: "/admin/menu",      emoji: "🍽" },
+  { id: "events",    label: "Events",    href: "/admin/events",    emoji: "🗓️" },
+  { id: "gallery",   label: "Gallery",   href: "/admin/gallery",   emoji: "📸" },
+  { id: "inquiries", label: "Inquiries", href: "/admin/inquiries", emoji: "📬" },
+  { id: "settings",  label: "Settings",  href: "/admin/settings",  emoji: "⚙️" },
 ];
 
 function useIsMobile(breakpoint = 640) {
