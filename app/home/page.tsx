@@ -30,6 +30,7 @@ const DAY_ORDER: DayKey[] = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
 const COPY: Record<Lang, {
   tagline: string; menuBtn: string; menuSub: string; feedbackBtn: string; feedbackSub: string;
+  reserveBtn: string; reserveSub: string;
   events: string; about: string; hours: string; todayLabel: string; closed: string;
   gallery: string; privateEvents: string; privateEventsDesc: string;
   nameLabel: string; contactLabel: string; contactHint: string;
@@ -42,6 +43,7 @@ const COPY: Record<Lang, {
     tagline: "מסעדה ערבית אותנטית",
     menuBtn: "לתפריט", menuSub: "צפו במנות ומשקאות",
     feedbackBtn: "השאירו פידבק", feedbackSub: "ספרו לנו איך היה",
+    reserveBtn: "הזמינו שולחן", reserveSub: "הזמנה מהירה אונליין",
     events: "אירועים קרובים", about: "אודותינו",
     hours: "שעות פתיחה", todayLabel: "היום", closed: "סגור",
     gallery: "גלריה",
@@ -63,6 +65,7 @@ const COPY: Record<Lang, {
     tagline: "مطعم عربي أصيل",
     menuBtn: "قائمة الطعام", menuSub: "تصفح الأطباق والمشروبات",
     feedbackBtn: "اترك تقييم", feedbackSub: "أخبرنا كيف كانت تجربتك",
+    reserveBtn: "احجز طاولة", reserveSub: "حجز سريع أونلاين",
     events: "الفعاليات القادمة", about: "من نحن",
     hours: "ساعات العمل", todayLabel: "اليوم", closed: "مغلق",
     gallery: "معرض الصور",
@@ -84,6 +87,7 @@ const COPY: Record<Lang, {
     tagline: "Authentic Arab cuisine",
     menuBtn: "View menu", menuSub: "Browse dishes and drinks",
     feedbackBtn: "Leave feedback", feedbackSub: "Tell us how it was",
+    reserveBtn: "Reserve a table", reserveSub: "Quick online booking",
     events: "Upcoming events", about: "About us",
     hours: "Opening hours", todayLabel: "Today", closed: "Closed",
     gallery: "Gallery",
@@ -264,6 +268,11 @@ export default function HomePage() {
           <span className="homeCtaEmoji">🍽️</span>
           <span className="homeCtaLabel">{t.menuBtn}</span>
           <span className="homeCtaSub">{t.menuSub}</span>
+        </a>
+        <a href="https://ontopo.com/he/il/page/58618784" target="_blank" rel="noreferrer" className="homeCta homeCta--reserve">
+          <span className="homeCtaEmoji">📅</span>
+          <span className="homeCtaLabel">{t.reserveBtn}</span>
+          <span className="homeCtaSub">{t.reserveSub}</span>
         </a>
         <a href="https://feedback.kabakeh.com" className="homeCta homeCta--secondary">
           <span className="homeCtaEmoji">⭐</span>

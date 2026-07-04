@@ -771,6 +771,13 @@ html, body {
   border: 1px solid var(--ka-amber-dark);
 }
 
+.homeCta--reserve {
+  background: var(--ka-green);
+  color: white;
+  border: 1px solid var(--ka-green-dark);
+}
+.homeCta--reserve:hover { background: var(--ka-green-dark); }
+
 .homeCta--secondary {
   background: #ffffff;
   color: var(--ka-text);
