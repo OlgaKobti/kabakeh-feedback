@@ -160,12 +160,14 @@ export default function HomePage() {
   const inputStyle: React.CSSProperties = { width: "100%", padding: "11px 14px", borderRadius: 10, border: "1.5px solid var(--ka-border)", fontSize: 15, fontFamily: "inherit", background: "#fff", color: "var(--ka-text)", boxSizing: "border-box" };
 
   return (
-    <main className="homeWrap" dir={rtl ? "rtl" : "ltr"}>
-      {/* Fixed animated full-page background */}
+    <>
+      {/* Fixed animated full-page background — must be OUTSIDE main to avoid stacking context issues */}
       <div className="pageBgWrap" aria-hidden="true">
         <img src="/atmos.jpg" alt="" className="pageBgImg" />
         <div className="pageBgOverlay" />
       </div>
+
+      <main className="homeWrap" dir={rtl ? "rtl" : "ltr"}>
 
       {/* Top bar */}
       <header className="homeTop">
@@ -355,5 +357,6 @@ export default function HomePage() {
         </div>
       </footer>
     </main>
+    </>
   );
 }

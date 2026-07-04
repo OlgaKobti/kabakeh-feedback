@@ -589,6 +589,8 @@ html, body {
   flex-direction: column;
   gap: 18px;
   background: transparent;
+  position: relative;
+  z-index: 1;   /* above pageBgWrap (z-index: 0) */
 }
 
 .homeTop {
@@ -632,7 +634,7 @@ html, body {
 .pageBgWrap {
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;   /* 0, not -1 — must be above the body canvas background */
   overflow: hidden;
 }
 
