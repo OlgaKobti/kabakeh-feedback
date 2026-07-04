@@ -584,17 +584,28 @@ html, body {
   min-height: 100vh;
   max-width: 860px;
   margin: 0 auto;
-  padding: 16px 16px 40px;
+  padding: 0 16px 40px;
   display: flex;
   flex-direction: column;
   gap: 18px;
+  background: transparent;
 }
 
 .homeTop {
+  position: sticky;
+  top: 0;
+  z-index: 50;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 12px;
+  padding: 12px 0;
+  background: rgba(14, 9, 5, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  margin: 0 -16px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .homeTopLeft {
@@ -603,6 +614,13 @@ html, body {
   gap: 12px;
 }
 
+/* Override brand + lang colors inside the home top bar (dark bg) */
+.homeTop .menuBrand { color: #fff; }
+.homeTop .langBtn   { color: rgba(255,255,255,0.7); }
+.homeTop .langBtn[aria-pressed="true"],
+.homeTop .langBtn:hover { color: #fff; background: rgba(255,255,255,0.12); }
+
+/* ─── Full-page animated background ──────────────────────────────────────── */
 @keyframes kenBurns {
   0%   { transform: scale(1.0)  translate(0%,    0%);    }
   25%  { transform: scale(1.07) translate(-1.5%, -0.8%); }
@@ -611,67 +629,81 @@ html, body {
   100% { transform: scale(1.0)  translate(0%,    0%);    }
 }
 
-.homeHero {
-  position: relative;
-  border-radius: 20px;
+.pageBgWrap {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
   overflow: hidden;
-  border: 1px solid var(--ka-border);
-  box-shadow: 0 12px 28px rgba(28, 23, 18, 0.10);
 }
 
-.homeHeroImg {
+.pageBgImg {
   width: 100%;
-  height: 240px;
+  height: 100%;
   object-fit: cover;
-  display: block;
   transform-origin: center center;
   animation: kenBurns 22s ease-in-out infinite;
   will-change: transform;
 }
 
-@media (min-width: 600px) {
-  .homeHeroImg { height: 320px; }
+.pageBgOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(14, 9, 5, 0.55);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .homeHeroImg { animation: none; }
+  .pageBgImg { animation: none; }
 }
 
+.homeHero {
+  min-height: 60vh;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 32px;
+  /* no overflow/border — it's just text over the page background */
+}
+
+@media (min-width: 600px) {
+  .homeHero { min-height: 70vh; }
+}
+
+.homeHeroImg { display: none; } /* kept for safety, hidden */
+
 .homeHeroOverlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 32px 24px 22px;
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+  padding: 0 8px 0;
 }
 
 .homeHeroName {
   font-family: var(--font-playfair), Georgia, serif;
-  font-size: 36px;
+  font-size: 52px;
   font-weight: 700;
   color: #ffffff;
   margin: 0;
   line-height: 1;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
 }
 
 @media (min-width: 600px) {
-  .homeHeroName { font-size: 52px; }
+  .homeHeroName { font-size: 72px; }
 }
 
 .homeHeroTagline {
-  margin-top: 8px;
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.85);
+  margin-top: 10px;
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.88);
   font-style: italic;
   font-weight: 400;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
 }
 
 .homeCtaRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+  background: rgba(249, 245, 239, 0.96);
+  border-radius: 16px;
+  padding: 16px;
 }
 
 @media (max-width: 480px) {
@@ -768,9 +800,13 @@ html, body {
 
 /* ─── Events section ──────────────────────────────────────────────────── */
 .homeEvents {
-  padding: 24px 16px 8px;
+  padding: 24px 20px;
   max-width: 780px;
   margin: 0 auto;
+  background: rgba(249, 245, 239, 0.96);
+  border-radius: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .homeEventsTitle {
@@ -906,9 +942,13 @@ html, body {
 
 /* ─── Generic section wrapper ─────────────────────────────────────────────── */
 .homeSection {
-  padding: 24px 16px 8px;
+  padding: 24px 20px;
   max-width: 700px;
   margin: 0 auto;
+  background: rgba(249, 245, 239, 0.96);
+  border-radius: 20px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .homeSectionTitle {

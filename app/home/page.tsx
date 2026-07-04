@@ -161,6 +161,12 @@ export default function HomePage() {
 
   return (
     <main className="homeWrap" dir={rtl ? "rtl" : "ltr"}>
+      {/* Fixed animated full-page background */}
+      <div className="pageBgWrap" aria-hidden="true">
+        <img src="/atmos.jpg" alt="" className="pageBgImg" />
+        <div className="pageBgOverlay" />
+      </div>
+
       {/* Top bar */}
       <header className="homeTop">
         <div className="homeTopLeft">
@@ -178,9 +184,8 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Hero */}
+      {/* Hero — full-screen text over the animated background */}
       <div className="homeHero">
-        <img src="/atmos.jpg" alt="Kabakeh restaurant" className="homeHeroImg" />
         <div className="homeHeroOverlay">
           <h1 className="homeHeroName">Kabakeh</h1>
           <p className="homeHeroTagline">{t.tagline}</p>
