@@ -658,15 +658,14 @@ html, body {
 }
 
 .homeHero {
-  min-height: 60vh;
+  min-height: 38vh;
   display: flex;
   align-items: flex-end;
   padding-bottom: 32px;
-  /* no overflow/border — it's just text over the page background */
 }
 
 @media (min-width: 600px) {
-  .homeHero { min-height: 70vh; }
+  .homeHero { min-height: 46vh; }
 }
 
 .homeHeroImg { display: none; } /* kept for safety, hidden */
