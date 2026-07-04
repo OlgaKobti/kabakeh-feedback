@@ -3,6 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import { AdminShell } from "../components/AdminShell";
 
+function useIsMobile(breakpoint = 640) {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < breakpoint);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [breakpoint]);
+  return isMobile;
+}
+
 type DbCategory = {
   id: string;
   title_he: string;
@@ -97,6 +108,7 @@ export default function MenuAdminClient() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   const fileRef = useRef<HTMLInputElement>(null);
+  const isMobile = useIsMobile();
 
   async function load() {
     setLoading(true);
@@ -344,8 +356,9 @@ export default function MenuAdminClient() {
                     style={{
                       display: "flex",
                       alignItems: "center",
+                      flexWrap: isMobile ? "wrap" : "nowrap",
                       gap: 12,
-                      padding: "10px 16px",
+                      padding: isMobile ? "12px" : "10px 16px",
                       borderBottom: idx < catItems.length - 1 ? "1px solid #f3f4f6" : "none",
                       background: it.available ? "#fff" : "#fafafa",
                     }}
@@ -406,6 +419,20 @@ export default function MenuAdminClient() {
                       </div>
                     </div>
 
+                    {/* Controls: price, badge, edit, delete */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        ...(isMobile && {
+                          width: "100%",
+                          paddingInlineStart: 58,
+                          marginTop: 4,
+                          justifyContent: "space-between",
+                        }),
+                      }}
+                    >
                     {/* Price */}
                     <div
                       style={{
@@ -504,6 +531,7 @@ export default function MenuAdminClient() {
                         Delete
                       </button>
                     )}
+                    </div>{/* /controls */}
                   </div>
                 ))}
               </div>
@@ -520,11 +548,11 @@ export default function MenuAdminClient() {
             inset: 0,
             background: "rgba(0,0,0,0.55)",
             display: "flex",
-            alignItems: "flex-start",
+            alignItems: isMobile ? "flex-end" : "flex-start",
             justifyContent: "center",
             zIndex: 1000,
-            overflowY: "auto",
-            padding: "24px 16px 48px",
+            overflowY: isMobile ? "hidden" : "auto",
+            padding: isMobile ? 0 : "24px 16px 48px",
           }}
           onClick={(e) => {
             if (e.target === e.currentTarget) closeModal();
@@ -533,10 +561,12 @@ export default function MenuAdminClient() {
           <div
             style={{
               background: "#fff",
-              borderRadius: 16,
-              padding: "28px 28px 24px",
+              borderRadius: isMobile ? "20px 20px 0 0" : 16,
+              padding: isMobile ? "20px 16px 36px" : "28px 28px 24px",
               width: "100%",
-              maxWidth: 620,
+              maxWidth: isMobile ? "100%" : 620,
+              maxHeight: isMobile ? "90vh" : undefined,
+              overflowY: isMobile ? "auto" : undefined,
               boxShadow: "0 24px 64px rgba(0,0,0,0.25)",
             }}
           >
@@ -588,7 +618,7 @@ export default function MenuAdminClient() {
               {/* Names */}
               <div>
                 <div style={sectionHead}>Dish Name</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10 }}>
                   {(["he", "ar", "en"] as const).map((lng) => (
                     <div key={lng}>
                       <div style={label}>
